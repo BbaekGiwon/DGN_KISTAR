@@ -7,8 +7,16 @@ Description: visualize hand model using plotly.graph_objects
 import os
 import sys
 
-os.chdir(os.path.dirname(os.path.dirname(__file__)))
-sys.path.append(os.path.realpath('.'))
+try:
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+except NameError:
+    base_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+
+os.chdir(base_dir)
+sys.path.append(base_dir)
+
+# os.chdir(os.path.dirname(os.path.dirname(__file__)))
+# sys.path.append(os.path.realpath('.'))
 
 import numpy as np
 import torch
