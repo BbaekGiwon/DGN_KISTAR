@@ -2,6 +2,9 @@
 Last modified date: 2023.02.23
 Author: Jialiang Zhang, Ruicheng Wang
 Description: generate grasps in large-scale, use multiple graphics cards, no logging
+
+python scripts/validate_grasps.py --gpu 0 --index 3 --object_code core-mug-8570d9a8d24cb0acbebd3c0c0c70fb03
+
 """
 
 import os
@@ -165,25 +168,31 @@ if __name__ == '__main__':
     parser.add_argument('--all', action='store_true')
     parser.add_argument('--overwrite', action='store_true')
     parser.add_argument('--todo', action='store_true')
-    parser.add_argument('--seed', default=1, type=int)
+    parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--n_contact', default=4, type=int)
     # parser.add_argument('--batch_size_each', default=500, type=int)
-    parser.add_argument('--batch_size_each', default=50, type=int)
+    parser.add_argument('--batch_size_each', default=20, type=int)
     # parser.add_argument('--max_total_batch_size', default=1000, type=int)
     parser.add_argument('--max_total_batch_size', default=100, type=int)
     # parser.add_argument('--n_iter', default=6000, type=int)
-    parser.add_argument('--n_iter', default=1000, type=int)
+    parser.add_argument('--n_iter', default=16000, type=int)
     # hyper parameters
     parser.add_argument('--switch_possibility', default=0.5, type=float)
     parser.add_argument('--mu', default=0.98, type=float)
-    parser.add_argument('--step_size', default=0.005, type=float)
+    # parser.add_argument('--step_size', default=0.005, type=float)
+    parser.add_argument('--step_size', default=0.01, type=float)
     parser.add_argument('--stepsize_period', default=50, type=int)
     parser.add_argument('--starting_temperature', default=18, type=float)
+    # parser.add_argument('--starting_temperature', default=30, type=float)
     parser.add_argument('--annealing_period', default=30, type=int)
+    # parser.add_argument('--annealing_period', default=50, type=int)
     parser.add_argument('--temperature_decay', default=0.95, type=float)
     parser.add_argument('--w_dis', default=100.0, type=float)
+    # parser.add_argument('--w_dis', default=500.0, type=float)
     parser.add_argument('--w_pen', default=100.0, type=float)
+    # parser.add_argument('--w_pen', default=300.0, type=float)
     parser.add_argument('--w_spen', default=10.0, type=float)
+    # parser.add_argument('--w_spen', default=20.0, type=float)
     parser.add_argument('--w_joints', default=1.0, type=float)
     # initialization settings
     parser.add_argument('--jitter_strength', default=0.1, type=float)
@@ -193,8 +202,10 @@ if __name__ == '__main__':
     parser.add_argument('--theta_upper', default=math.pi / 6, type=float)
     # energy thresholds
     parser.add_argument('--thres_fc', default=0.3, type=float)
-    parser.add_argument('--thres_dis', default=0.005, type=float)
-    parser.add_argument('--thres_pen', default=0.001, type=float)
+    parser.add_argument('--thres_dis', default=0.008, type=float)
+    # parser.add_argument('--thres_dis', default=0.005, type=float)
+    # parser.add_argument('--thres_pen', default=0.001, type=float)
+    parser.add_argument('--thres_pen', default=0.005, type=float)
 
     args = parser.parse_args()
 

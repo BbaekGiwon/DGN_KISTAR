@@ -20,7 +20,7 @@ class IsaacValidator():
                  obj_friction=3.,
                  threshold_dis=0.1,
                  env_batch=1,
-                 sim_step=100,
+                 sim_step=1000,
                  gpu=0,
                  debug_interval=0.05):
 
@@ -149,8 +149,10 @@ class IsaacValidator():
             self.hand_handles.append(hand_actor_handle)
             hand_props = gym.get_actor_dof_properties(env, hand_actor_handle)
             hand_props["driveMode"].fill(gymapi.DOF_MODE_POS)
-            hand_props["stiffness"].fill(1000)
-            hand_props["damping"].fill(0.0)
+            # hand_props["stiffness"].fill(1000)
+            hand_props["stiffness"].fill(200)
+            # hand_props["damping"].fill(0.0)
+            hand_props["damping"].fill(50.0)
             gym.set_actor_dof_properties(env, hand_actor_handle, hand_props)
             dof_states = gym.get_actor_dof_states(env, hand_actor_handle,
                                                   gymapi.STATE_ALL)
@@ -321,6 +323,10 @@ class IsaacValidator():
         self.obj_asset = None
 
     def destroy(self):
+        if getattr(self, "disable_destroy", False):
+            print("[DEBUG] Destroy skipped due to disable_destroy=True")
+            return
+
         gym.destroy_sim(self.sim)
         if self.has_viewer:
-            gym.destroy_viewer(self.sim)
+            gym.destroy_viewer(self.viewer)

@@ -207,3 +207,9 @@ if __name__ == '__main__':
             f'data_root_path {args.data_root_path} doesn\'t exist')
 
     decompose(args, args.object_code)
+
+
+# python decompose.py --coacd_path ../thirdparty/CoACD/build/main \
+#     --result_path ./data/meshdata \
+#     --data_root_path ./data/normalized_models \
+#     --object_code core-mug-8570d9a8d24cb0acbebd3c0c0c70fb03

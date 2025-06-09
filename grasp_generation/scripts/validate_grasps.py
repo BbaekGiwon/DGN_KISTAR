@@ -2,6 +2,9 @@
 Last modified date: 2023.02.23
 Author: Ruicheng Wang
 Description: validate grasps on Isaac simulator
+
+python scripts/validate_grasps.py --gpu 0 --object_code sem-Bottle-437678d4bc6be981c8724d5673a063a6
+
 """
 
 import os
@@ -19,7 +22,7 @@ from utils.object_model import ObjectModel
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu', default=3, type=int)
+    parser.add_argument('--gpu', default=0, type=int)
     parser.add_argument('--val_batch', default=500, type=int)
     parser.add_argument('--mesh_path', default="../data/meshdata", type=str)
     parser.add_argument('--grasp_path', default="../data/graspdata", type=str)
@@ -32,8 +35,11 @@ if __name__ == '__main__':
     parser.add_argument('--no_force', action='store_true')
     parser.add_argument('--thres_cont', default=0.001, type=float)
     parser.add_argument('--dis_move', default=0.001, type=float)
-    parser.add_argument('--grad_move', default=500, type=float)
+    # parser.add_argument('--dis_move', default=0.002, type=float)
+    parser.add_argument('--grad_move', default=10, type=float)
+    # parser.add_argument('--grad_move', default=500, type=float)
     parser.add_argument('--penetration_threshold', default=0.001, type=float)
+    # parser.add_argument('--penetration_threshold', default=0.0005, type=float)
 
     args = parser.parse_args()
 
@@ -125,12 +131,10 @@ if __name__ == '__main__':
             hand_state[:, 9:] += hand_state.grad[:, 9:] * args.grad_move
             hand_state.grad.zero_()
 
-    sim = IsaacValidator(gpu=args.gpu)
-    if (args.index is not None):
-        sim = IsaacValidator(gpu=args.gpu, mode="gui")
-
+    sim = IsaacValidator(gpu=args.gpu, mode="gui" if args.index is not None else None)
     data_dict = np.load(os.path.join(
         args.grasp_path, args.object_code + '.npy'), allow_pickle=True)
+    
     batch_size = data_dict.shape[0]
     scale_array = []
     hand_poses = []
@@ -192,4 +196,12 @@ if __name__ == '__main__':
                 result_list.append(new_data_dict)
         np.save(os.path.join(args.result_path, args.object_code +
                 '.npy'), result_list, allow_pickle=True)
-    sim.destroy()
+    # sim.destroy()
+
+    if args.index is not None:
+        print("Viewer running. Press Ctrl+C to exit.")
+        try:
+            while True:
+                sim.run_sim() # 또는 time.sleep(1)
+        except KeyboardInterrupt:
+            print("Exiting...")

@@ -63,3 +63,10 @@ _build
 **/runs/*
 **/logs/*
 **/recordings/*
+**/graspdata/*
+
+**/*.obj
+**/*.wrl
+**/model.config
+**/coacd.urdf
+*.npy
