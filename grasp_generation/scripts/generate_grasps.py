@@ -204,8 +204,8 @@ if __name__ == '__main__':
     parser.add_argument('--thres_fc', default=0.3, type=float)
     parser.add_argument('--thres_dis', default=0.008, type=float)
     # parser.add_argument('--thres_dis', default=0.005, type=float)
-    # parser.add_argument('--thres_pen', default=0.001, type=float)
-    parser.add_argument('--thres_pen', default=0.005, type=float)
+    parser.add_argument('--thres_pen', default=0.001, type=float)
+    # parser.add_argument('--thres_pen', default=0.005, type=float)
 
     args = parser.parse_args()
 

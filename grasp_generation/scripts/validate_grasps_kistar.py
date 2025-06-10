@@ -23,22 +23,22 @@ from utils.object_model import ObjectModel
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', default=0, type=int)
-    parser.add_argument('--val_batch', default=500, type=int)
+    parser.add_argument('--val_batch', default=100, type=int)
     parser.add_argument('--mesh_path', default="../data/meshdata", type=str)
     parser.add_argument('--grasp_path', default="../data/graspdata", type=str)
     parser.add_argument('--result_path', default="../data/dataset", type=str)
     parser.add_argument('--object_code',
-                        default="sem-Camera-7bff4fd4dc53de7496dece3f86cb5dd5",
+                        default="mujoco-Ecoforms_Plant_Plate_S11Turquoise",
                         type=str)
     # if index is received, then the debug mode is on
     parser.add_argument('--index', type=int)
     parser.add_argument('--no_force', action='store_true')
-    parser.add_argument('--thres_cont', default=0.001, type=float)
-    parser.add_argument('--dis_move', default=0.001, type=float)
+    parser.add_argument('--thres_cont', default=0.002, type=float)
+    parser.add_argument('--dis_move', default=0.002, type=float)
     # parser.add_argument('--dis_move', default=0.002, type=float)
-    parser.add_argument('--grad_move', default=10, type=float)
-    # parser.add_argument('--grad_move', default=500, type=float)
-    parser.add_argument('--penetration_threshold', default=0.001, type=float)
+    # parser.add_argument('--grad_move', default=10, type=float)
+    parser.add_argument('--grad_move', default=100, type=float)
+    parser.add_argument('--penetration_threshold', default=0.0005, type=float)
     # parser.add_argument('--penetration_threshold', default=0.0005, type=float)
 
     args = parser.parse_args()

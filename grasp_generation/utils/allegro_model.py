@@ -452,3 +452,22 @@ class HandModel:
                 )
             )
         return data
+    def get_trimesh_data(self, i):
+        """
+        Get full mesh
+        
+        Returns
+        -------
+        data: trimesh.Trimesh
+        """
+        data = tm.Trimesh()
+        for link_name in self.mesh:
+            v = self.current_status[link_name].transform_points(
+                self.mesh[link_name]['vertices'])
+            if len(v.shape) == 3:
+                v = v[i]
+            v = v @ self.global_rotation[i].T + self.global_translation[i]
+            v = v.detach().cpu()
+            f = self.mesh[link_name]['faces'].detach().cpu()
+            data += tm.Trimesh(vertices=v, faces=f)
+        return data

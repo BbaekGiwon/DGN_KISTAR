@@ -36,8 +36,8 @@ if __name__ == '__main__':
     parser.add_argument('--thres_cont', default=0.001, type=float)
     parser.add_argument('--dis_move', default=0.001, type=float)
     # parser.add_argument('--dis_move', default=0.002, type=float)
-    parser.add_argument('--grad_move', default=10, type=float)
-    # parser.add_argument('--grad_move', default=500, type=float)
+    # parser.add_argument('--grad_move', default=10, type=float)
+    parser.add_argument('--grad_move', default=500, type=float)
     parser.add_argument('--penetration_threshold', default=0.001, type=float)
     # parser.add_argument('--penetration_threshold', default=0.0005, type=float)
 

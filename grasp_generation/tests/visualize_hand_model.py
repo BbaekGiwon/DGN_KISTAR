@@ -108,7 +108,7 @@ if __name__ == "__main__":
             y=surface_points[:, 1],
             z=surface_points[:, 2],
             mode="markers",
-            marker=dict(color="lightblue", size=2),
+            marker=dict(color="lightblue", size=10),
         )
     ]
     contact_candidates_plotly = [

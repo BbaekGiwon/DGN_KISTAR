@@ -84,34 +84,13 @@ if __name__ == "__main__":
     hand_plotly = hand_model.get_plotly_data(
         i=0, opacity=0.5, with_contact_points=False, color="lightblue"
     )
-    v = contact_candidates.detach().cpu()
-    contact_candidates_plotly = [
-        go.Scatter3d(
-            x=v[:, 0],
-            y=v[:, 1],
-            z=v[:, 2],
-            mode="markers",
-            marker=dict(size=2, color="white"),
-        )
-    ]
-    v = surface_points.detach().cpu()
-    surface_points_plotly = [
-        go.Scatter3d(
-            x=v[:, 0],
-            y=v[:, 1],
-            z=v[:, 2],
-            mode="markers",
-            marker=dict(size=2, color="lightblue"),
-        )
-    ]
-
     surface_points_plotly = [
         go.Scatter3d(
             x=surface_points[:, 0],
             y=surface_points[:, 1],
             z=surface_points[:, 2],
             mode="markers",
-            marker=dict(color="lightblue", size=2),
+            marker=dict(color="lightblue", size=10),
         )
     ]
     contact_candidates_plotly = [

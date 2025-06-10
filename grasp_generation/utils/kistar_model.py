@@ -154,7 +154,13 @@ class HandModel:
             dense_point_cloud = pytorch3d.ops.sample_points_from_meshes(mesh, num_samples=100 * num_samples[link_name])
             surface_points = pytorch3d.ops.sample_farthest_points(dense_point_cloud, K=num_samples[link_name])[0][0]
             surface_points.to(dtype=float, device=device)
-            self.mesh[link_name]['surface_points'] = surface_points
+            # self.mesh[link_name]['surface_points'] = surface_points
+            
+            if link_name not in {"thumb_basemotor", "index_basemotor", "middle_basemotor", "ring_basemotor"}:
+                self.mesh[link_name]['surface_points'] = surface_points
+            else:
+                self.mesh[link_name]['surface_points'] = torch.zeros((0, 3), dtype=torch.float, device=device)
+
 
         self.link_name_to_link_index = dict(zip([link_name for link_name in self.mesh], range(len(self.mesh))))
         self.surface_points_link_indices = torch.cat([self.link_name_to_link_index[link_name] * torch.ones(self.mesh[link_name]['surface_points'].shape[0], dtype=torch.long, device=device) for link_name in self.mesh])
@@ -445,14 +451,15 @@ class HandModel:
         points = []
         batch_size = self.global_translation.shape[0]
         for link_name in self.mesh:
-            n_surface_points = self.mesh[link_name]["surface_points"].shape[0]
-            points.append(
-                self.current_status[link_name].transform_points(
-                    self.mesh[link_name]["surface_points"]
+            if link_name not in {"thumb_basemotor", "index_basemotor", "middle_basemotor", "ring_basemotor"}:
+                n_surface_points = self.mesh[link_name]["surface_points"].shape[0]
+                points.append(
+                    self.current_status[link_name].transform_points(
+                        self.mesh[link_name]["surface_points"]
+                    )
                 )
-            )
-            if 1 < batch_size != points[-1].shape[0]:
-                points[-1] = points[-1].expand(batch_size, n_surface_points, 3)
+                if 1 < batch_size != points[-1].shape[0]:
+                    points[-1] = points[-1].expand(batch_size, n_surface_points, 3)
         points = torch.cat(points, dim=-2).to(self.device)
         points = points @ self.global_rotation.transpose(
             1, 2

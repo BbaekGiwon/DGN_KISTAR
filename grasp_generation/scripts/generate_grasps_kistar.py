@@ -101,22 +101,42 @@ def generate(args_list):
 
     energy.sum().backward(retain_graph=True)
 
+    # for step in range(1, args.n_iter + 1):
+    #     s = optimizer.try_step()
+    #     optimizer.zero_grad()
+    #     new_energy, new_E_fc, new_E_dis, new_E_pen, new_E_spen, new_E_joints = cal_energy(hand_model, object_model, verbose=True, **weight_dict)
+
+    #     new_energy.sum().backward(retain_graph=True)
+
+    #     with torch.no_grad():
+    #         accept, t = optimizer.accept_step(energy, new_energy)
+
+    #         energy[accept] = new_energy[accept]
+    #         E_dis[accept] = new_E_dis[accept]
+    #         E_fc[accept] = new_E_fc[accept]
+    #         E_pen[accept] = new_E_pen[accept]
+    #         E_spen[accept] = new_E_spen[accept]
+    #         E_joints[accept] = new_E_joints[accept]
+
     for step in range(1, args.n_iter + 1):
+        before = hand_model.hand_pose.clone()
         s = optimizer.try_step()
         optimizer.zero_grad()
         new_energy, new_E_fc, new_E_dis, new_E_pen, new_E_spen, new_E_joints = cal_energy(hand_model, object_model, verbose=True, **weight_dict)
-
         new_energy.sum().backward(retain_graph=True)
-
         with torch.no_grad():
-            accept, t = optimizer.accept_step(energy, new_energy)
+            accept, temp = optimizer.accept_step(energy, new_energy)
+            if accept.any():
+                # print(f"Step {step}: accepted at temp {temp:.2f}, Δpose max {(hand_model.hand_pose - before).abs().max():.4f}")
+                energy[accept] = new_energy[accept]
+                E_dis[accept] = new_E_dis[accept]
+                E_fc[accept] = new_E_fc[accept]
+                E_pen[accept] = new_E_pen[accept]
+                E_spen[accept] = new_E_spen[accept]
+                E_joints[accept] = new_E_joints[accept]
 
-            energy[accept] = new_energy[accept]
-            E_dis[accept] = new_E_dis[accept]
-            E_fc[accept] = new_E_fc[accept]
-            E_pen[accept] = new_E_pen[accept]
-            E_spen[accept] = new_E_spen[accept]
-            E_joints[accept] = new_E_joints[accept]
+        if step % 500 == 0:
+            print(f"[{step}] current energy: {energy.mean().item():.4f}")
 
 
     # save results
@@ -126,9 +146,9 @@ def generate(args_list):
         'robot0:FFJ3', 'robot0:FFJ2', 'robot0:FFJ1', 'robot0:FFJ0',
         'robot0:MFJ3', 'robot0:MFJ2', 'robot0:MFJ1', 'robot0:MFJ0',
         'robot0:RFJ3', 'robot0:RFJ2', 'robot0:RFJ1', 'robot0:RFJ0',
-        'robot0:LFJ4', 'robot0:LFJ3', 'robot0:LFJ2', 'robot0:LFJ1', 'robot0:LFJ0',
-        'robot0:THJ4', 'robot0:THJ3', 'robot0:THJ2', 'robot0:THJ1', 'robot0:THJ0'
+        'robot0:LFJ4', 'robot0:LFJ3', 'robot0:LFJ2', 'robot0:LFJ1',
     ]
+
     for i, object_code in enumerate(object_code_list):
         data_list = []
         for j in range(args.batch_size_each):
@@ -136,6 +156,7 @@ def generate(args_list):
             scale = object_model.object_scale_tensor[i][j].item()
             hand_pose = hand_model.hand_pose[idx].detach().cpu()
             qpos = dict(zip(joint_names, hand_pose[9:].tolist()))
+
             rot = robust_compute_rotation_matrix_from_ortho6d(hand_pose[3:9].unsqueeze(0))[0]
             euler = transforms3d.euler.mat2euler(rot, axes='sxyz')
             qpos.update(dict(zip(rot_names, euler)))
@@ -171,36 +192,31 @@ if __name__ == '__main__':
     parser.add_argument('--todo', action='store_true')
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--n_contact', default=4, type=int)
-    # parser.add_argument('--max_total_batch_size', default=1000, type=int)
-    # parser.add_argument('--batch_size_each', default=500, type=int)
-    parser.add_argument('--batch_size_each', default=20, type=int)
-    parser.add_argument('--max_total_batch_size', default=20, type=int)
+    parser.add_argument('--max_total_batch_size', default=1000, type=int)
+    parser.add_argument('--batch_size_each', default=600, type=int)
     parser.add_argument('--n_iter', default=6000, type=int)
     # hyper parameters
     parser.add_argument('--switch_possibility', default=0.5, type=float)
     parser.add_argument('--mu', default=0.98, type=float)
-    parser.add_argument('--step_size', default=0.005, type=float)
-    # parser.add_argument('--step_size', default=0.01, type=float)
+    parser.add_argument('--step_size', default=0.01, type=float)
     parser.add_argument('--stepsize_period', default=50, type=int)
-    parser.add_argument('--starting_temperature', default=18, type=float)
-    parser.add_argument('--annealing_period', default=30, type=int)
-    parser.add_argument('--temperature_decay', default=0.95, type=float)
-    parser.add_argument('--w_dis', default=100.0, type=float)
-    parser.add_argument('--w_pen', default=100.0, type=float)
-    parser.add_argument('--w_spen', default=10.0, type=float)
+    parser.add_argument('--starting_temperature', default=30, type=float)
+    parser.add_argument('--annealing_period', default=100, type=int)
+    parser.add_argument('--temperature_decay', default=0.99, type=float)
+    parser.add_argument('--w_dis', default=300.0, type=float)
+    parser.add_argument('--w_pen', default=200.0, type=float)
+    parser.add_argument('--w_spen', default=100.0, type=float)
     parser.add_argument('--w_joints', default=1.0, type=float)
     # initialization settings
-    parser.add_argument('--jitter_strength', default=0.1, type=float)
-    parser.add_argument('--distance_lower', default=0.2, type=float)
-    parser.add_argument('--distance_upper', default=0.3, type=float)
+    parser.add_argument('--jitter_strength', default=0.2, type=float)
+    parser.add_argument('--distance_lower', default=0.02, type=float)
+    parser.add_argument('--distance_upper', default=0.03, type=float)
     parser.add_argument('--theta_lower', default=-math.pi / 6, type=float)
     parser.add_argument('--theta_upper', default=math.pi / 6, type=float)
     # energy thresholds
     parser.add_argument('--thres_fc', default=0.3, type=float)
-    # parser.add_argument('--thres_dis', default=0.008, type=float)
     parser.add_argument('--thres_dis', default=0.005, type=float)
-    parser.add_argument('--thres_pen', default=0.001, type=float)
-    # parser.add_argument('--thres_pen', default=0.005, type=float)
+    parser.add_argument('--thres_pen', default=0.0008, type=float)
 
     args = parser.parse_args()
 
