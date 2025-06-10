@@ -5,8 +5,9 @@
   <link name="mount">
     <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/mount.obj" />
-      </geometry>
+        <cylinder length="0.00999999955296517" radius="0.019931690767407417" /></geometry>
+        <origin rpy="0 0 0" xyz="0 0 -0.007" />
+    
     </collision>
     <inertial>
       <mass value="0.0" />
@@ -27,8 +28,9 @@
    <link name="palm">
     <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/palm02.obj" />
-      </geometry>
+        <box size="0.04700000025331974 0.0895427018404007 0.08685353584587574" /></geometry>
+        <origin rpy="0 0 0" xyz="0.012 0.00079 -0.02862" />
+      
     </collision>
     <inertial>
 	    <mass value="0.15476" />
@@ -49,11 +51,10 @@
 
   
   <link name="thumb_basemotor">
-    <collision>
+    <!-- <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/thumb_basemotor.obj" />
-      </geometry>
-    </collision>
+        <box size="0.02400000027120114 0.01919999998062849 0.024000000208616257" /></geometry>
+    </collision> -->
     <inertial>
     	<mass value="0.01904" />
 	    <origin rpy="0 0 0" xyz="0.01002 0.00044 0.00000" />
@@ -71,9 +72,9 @@
 
   <link name="thumb_link_0">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00714 0.00000 0.02081" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/thumb_link_0.obj" />
-      </geometry>
+        <box size="0.026284214574843645 0.026000000536441803 0.04048462910577655" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.02423" />
@@ -92,9 +93,9 @@
 
   <link name="thumb_link_1">
     <collision>
+	    <origin rpy="0 0 0" xyz="0.00043 0.00000 0.00345" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/thumb_link_1.obj" />
-      </geometry>
+        <box size="0.013000000268220901 0.026000000536441803 0.01447937732003629" /></geometry>
     </collision>
     <inertial>
 	  <mass value="0.00191" />
@@ -113,9 +114,9 @@
 
   <link name="thumb_link_2">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00154 0.00021 0.01842" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/thumb_link_2.obj" />
-      </geometry>
+        <box size="0.013749999459832907 0.026100000366568565 0.042499997187405825" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.01827" />
@@ -135,10 +136,9 @@
   <link name="thumb_tip">
     <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/thumb_tip.obj" />
-      </geometry>
+        <mesh filename="meshes/kistar/thumb_tip.STL" /></geometry>
     </collision>
-  <inertial>
+    <inertial>
 	    <mass value="0.00719" />
 	    <origin rpy="0 0 0" xyz="-0.00190 0.00000 0.01626" />
 	    <inertia ixx="0.00000240986" ixy="0.00000000000" ixz="-0.00000023287" iyy="0.00000235111" iyz="0.00000000000" izz="0.00000036696" />
@@ -152,58 +152,12 @@
       </material>
     </visual>
   </link>
-
-  <link name="thumb_sensor_0">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
-
-  <link name="thumb_sensor_1">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
- 
-
-
   
   <link name="index_basemotor">
-    <collision>
+    <!-- <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_basemotor.obj" />
-      </geometry>
-    </collision>
+        <box size="0.028149999655596912 0.01919999998062849 0.024000000208616257" /></geometry>
+    </collision> -->
     <inertial>
     	<mass value="0.01904" />
     	<origin rpy="0 0 0" xyz="0.01338 0.00095 -0.00207" />
@@ -221,9 +175,9 @@
 
   <link name="index_link_0">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00353 0.00000 0.00948" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_link_0.obj" />
-      </geometry>
+        <box size="0.026000000536441803 0.026000000536441803 0.028453040402382612" /></geometry>
     </collision>
      <inertial>
 	    <mass value="0.00473" />
@@ -242,9 +196,9 @@
 
   <link name="index_link_1">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00166 0.00000 0.01675" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_link_1.obj" />
-      </geometry>
+        <box size="0.013749999459832907 0.026100000366568565 0.042499999050050974" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.03549" />
@@ -263,9 +217,9 @@
 
   <link name="index_link_2">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00154 0.00021 0.01842" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_link_2.obj" />
-      </geometry>
+        <box size="0.013750000391155481 0.02599999960511923 0.035698844119906425" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.01827" />
@@ -285,8 +239,7 @@
   <link name="index_tip">
     <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_tip.obj" />
-      </geometry>
+        <mesh filename="meshes/kistar/finger_tip.STL" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.00719" />
@@ -303,76 +256,11 @@
     </visual>
   </link>
 
-  <link name="index_sensor_0">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
-
-  <link name="index_sensor_1">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
- 
-  <link name="index_sensor_2">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
-
-  
   <link name="middle_basemotor">
-    <collision>
+    <!-- <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_basemotor.obj" />
-      </geometry>
-    </collision>
+        <box size="0.028149999655596912 0.01919999998062849 0.024000000208616257" /></geometry>
+    </collision> -->
     <inertial>
     	<mass value="0.01904" />
     	<origin rpy="0 0 0" xyz="0.01338 0.00095 -0.00207" />
@@ -390,9 +278,9 @@
 
   <link name="middle_link_0">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00353 0.00000 0.00948" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_link_0.obj" />
-      </geometry>
+        <box size="0.026000000536441803 0.026000000536441803 0.028453040402382612" /></geometry>
     </collision>
      <inertial>
 	    <mass value="0.00473" />
@@ -411,9 +299,9 @@
 
   <link name="middle_link_1">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00166 0.00000 0.01675" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_link_1.obj" />
-      </geometry>
+        <box size="0.013749999459832907 0.026100000366568565 0.042499999050050974" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.03549" />
@@ -432,9 +320,9 @@
 
   <link name="middle_link_2">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00154 0.00021 0.01842" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_link_2.obj" />
-      </geometry>
+        <box size="0.013750000391155481 0.02599999960511923 0.035698844119906425" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.01827" />
@@ -454,8 +342,7 @@
   <link name="middle_tip">
     <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_tip.obj" />
-      </geometry>
+        <mesh filename="meshes/kistar/finger_tip.STL" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.00719" />
@@ -472,77 +359,12 @@
     </visual>
   </link>
 
-  <link name="middle_sensor_0">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
-
-  <link name="middle_sensor_1">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
- 
-  <link name="middle_sensor_2">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
-
-
   
   <link name="ring_basemotor">
-    <collision>
+    <!-- <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_basemotor.obj" />
-      </geometry>
-    </collision>
+        <box size="0.028149999655596912 0.01919999998062849 0.024000000208616257" /></geometry>
+    </collision> -->
     <inertial>
     	<mass value="0.01904" />
     	<origin rpy="0 0 0" xyz="0.01338 0.00095 -0.00207" />
@@ -560,9 +382,9 @@
 
   <link name="ring_link_0">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00353 0.00000 0.00948" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_link_0.obj" />
-      </geometry>
+        <box size="0.026000000536441803 0.026000000536441803 0.028453040402382612" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.00473" />
@@ -581,9 +403,9 @@
 
   <link name="ring_link_1">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00166 0.00000 0.01675" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_link_1.obj" />
-      </geometry>
+        <box size="0.013749999459832907 0.026100000366568565 0.042499999050050974" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.03549" />
@@ -602,9 +424,9 @@
 
   <link name="ring_link_2">
     <collision>
+	    <origin rpy="0 0 0" xyz="-0.00154 0.00021 0.01842" />
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_link_2.obj" />
-      </geometry>
+        <box size="0.013750000391155481 0.02599999960511923 0.035698844119906425" /></geometry>
     </collision>
     <inertial>
 	    <mass value="0.01827" />
@@ -624,7 +446,7 @@
   <link name="ring_tip">
     <collision>
       <geometry>
-        <mesh filename="coll_meshes/kistar/finger_tip.obj" />
+        <mesh filename="meshes/kistar/finger_tip.STL" />
       </geometry>
     </collision>
     <inertial>
@@ -641,70 +463,6 @@
       </material>
     </visual>
   </link>
-
-  <link name="ring_sensor_0">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
-
-  <link name="ring_sensor_1">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
- 
-  <link name="ring_sensor_2">
-    <collision>
-      <geometry>
-        <mesh filename="coll_meshes/kistar/sensor.obj" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="0.0" />
-      <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/kistar/sensor.STL" />
-      </geometry>
-      <material name="Grey">
-        <color rgba="0.2 0.2 0.2 1" />
-      </material>
-    </visual>
-  </link>
-
 
 <joint name="kistar_mount_joint" type="fixed">
   <origin rpy="0. 0. 0." xyz="-0.02325 0. 0.071" />
@@ -754,19 +512,6 @@
   <dynamics damping="0.0226948" friction="0.0227036" />
 </joint>
 
-<joint name="thumb_sensor_0" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.00865" />
-  <parent link="thumb_link_2" />
-  <child link="thumb_sensor_0" />
-</joint>
-
-<joint name="thumb_sensor_1" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.02485" />
-  <parent link="thumb_link_2" />
-  <child link="thumb_sensor_1" />
-</joint>
-
-
 <joint name="index_base_joint" type="fixed">
   <origin rpy="-0.0873 0. 0." xyz="0. 0.02883 -0.00126" />
   <parent link="palm" />
@@ -805,27 +550,6 @@
   <child link="index_tip" />
   <dynamics damping="0.0226948" friction="0.0227036" />
 </joint>
-
-<joint name="index_sensor_0" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.00865" />
-  <parent link="index_link_1" />
-  <child link="index_sensor_0" />
-</joint>
-
-<joint name="index_sensor_1" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.02485" />
-  <parent link="index_link_1" />
-  <child link="index_sensor_1" />
-</joint>
-
-<joint name="index_sensor_2" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.01805" />
-  <parent link="index_link_2" />
-  <child link="index_sensor_2" />
-</joint>
-
-
-
 
 <joint name="middle_base_joint" type="fixed">
   <origin rpy="0. 0. 0." xyz="0. 0. 0." />
@@ -868,26 +592,6 @@
   <child link="middle_tip" />
   <dynamics damping="0.0226948" friction="0.0227036" />
 </joint>
-
-<joint name="middle_sensor_0" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.00865" />
-  <parent link="middle_link_1" />
-  <child link="middle_sensor_0" />
-</joint>
-
-<joint name="middle_sensor_1" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.02485" />
-  <parent link="middle_link_1" />
-  <child link="middle_sensor_1" />
-</joint>
-
-<joint name="middle_sensor_2" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.01805" />
-  <parent link="middle_link_2" />
-  <child link="middle_sensor_2" />
-</joint>
-
-
  
 <joint name="ring_base_joint" type="fixed">
   <origin rpy="0.0873 0. 0." xyz="0. -0.02883 -0.00126" />
@@ -926,24 +630,6 @@
   <parent link="ring_link_2" />
   <child link="ring_tip" />
   <dynamics damping="0.0226948" friction="0.0227036" />
-</joint>
-
-<joint name="ring_sensor_0" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.00865" />
-  <parent link="ring_link_1" />
-  <child link="ring_sensor_0" />
-</joint>
-
-<joint name="ring_sensor_1" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.02485" />
-  <parent link="ring_link_1" />
-  <child link="ring_sensor_1" />
-</joint>
-
-<joint name="ring_sensor_2" type="fixed">
-  <origin rpy="0. 0. 0." xyz="0.00525 0. 0.01805" />
-  <parent link="ring_link_2" />
-  <child link="ring_sensor_2" />
 </joint>
 
 </robot>

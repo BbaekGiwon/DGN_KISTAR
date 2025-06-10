@@ -28,7 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('--grasp_path', default="../data/graspdata", type=str)
     parser.add_argument('--result_path', default="../data/dataset", type=str)
     parser.add_argument('--object_code',
-                        default="sem-Xbox360-d0dff348985d4f8e65ca1b579a4b8d2",
+                        default="sem-Camera-7bff4fd4dc53de7496dece3f86cb5dd5",
                         type=str)
     # if index is received, then the debug mode is on
     parser.add_argument('--index', type=int)

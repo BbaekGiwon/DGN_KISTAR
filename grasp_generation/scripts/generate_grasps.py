@@ -170,17 +170,17 @@ if __name__ == '__main__':
     parser.add_argument('--todo', action='store_true')
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--n_contact', default=4, type=int)
-    # parser.add_argument('--batch_size_each', default=500, type=int)
-    parser.add_argument('--batch_size_each', default=20, type=int)
+    parser.add_argument('--batch_size_each', default=500, type=int)
+    # parser.add_argument('--batch_size_each', default=20, type=int)
     # parser.add_argument('--max_total_batch_size', default=1000, type=int)
-    parser.add_argument('--max_total_batch_size', default=100, type=int)
+    parser.add_argument('--max_total_batch_size', default=500, type=int)
     # parser.add_argument('--n_iter', default=6000, type=int)
-    parser.add_argument('--n_iter', default=16000, type=int)
+    parser.add_argument('--n_iter', default=6000, type=int)
     # hyper parameters
     parser.add_argument('--switch_possibility', default=0.5, type=float)
     parser.add_argument('--mu', default=0.98, type=float)
-    # parser.add_argument('--step_size', default=0.005, type=float)
-    parser.add_argument('--step_size', default=0.01, type=float)
+    parser.add_argument('--step_size', default=0.005, type=float)
+    # parser.add_argument('--step_size', default=0.01, type=float)
     parser.add_argument('--stepsize_period', default=50, type=int)
     parser.add_argument('--starting_temperature', default=18, type=float)
     # parser.add_argument('--starting_temperature', default=30, type=float)
@@ -211,7 +211,8 @@ if __name__ == '__main__':
 
     gpu_list = os.environ["CUDA_VISIBLE_DEVICES"].split(",")
     print(f'gpu_list: {gpu_list}')
-
+    import time
+    start = time.time()
     # check whether arguments are valid and process arguments
 
     np.random.seed(args.seed)
@@ -270,3 +271,5 @@ if __name__ == '__main__':
         with multiprocessing.Pool(len(gpu_list)) as p:
             it = tqdm(p.imap(generate, process_args), total=len(process_args), desc='generating', maxinterval=1000)
             list(it)
+
+    print(f'Finished in {time.time() - start:.2f} seconds.')
