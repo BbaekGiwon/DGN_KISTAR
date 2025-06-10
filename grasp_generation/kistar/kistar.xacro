@@ -1,0 +1,662 @@
+<?xml version="1.0"?>
+<!-- <?xml version='1.0' encoding='utf-8'?> -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="kistar_hand">
+  <xacro:property name="box_size_1" value="0.2 0.2 0.2"/>
+  <xacro:property name="box_size_2" value="0.04700000025331974 0.0895427018404007 0.08685353584587574"/>
+  <xacro:property name="box_size_3" value="0.02400000027120114 0.01919999998062849 0.024000000208616257"/>
+  <xacro:property name="box_size_4" value="0.01002 0.00044 0.00000"/>
+  <xacro:property name="box_size_5" value="0.00714 0.00000 0.02081"/>
+  <xacro:property name="box_size_6" value="0.026284214574843645 0.026000000536441803 0.04048462910577655"/>
+  <xacro:property name="box_size_7" value="0.00043 0.00000 0.00345"/>
+  <xacro:property name="box_size_8" value="0.013000000268220901 0.026000000536441803 0.01447937732003629"/>
+  <xacro:property name="box_size_9" value="0.00154 0.00021 0.01842"/>
+  <xacro:property name="box_size_10" value="0.013749999459832907 0.026100000366568565 0.042499997187405825"/>
+  <xacro:property name="box_size_11" value="0.00190 0.00000 0.01626"/>
+  <xacro:property name="box_size_12" value="0.028149999655596912 0.01919999998062849 0.024000000208616257"/>
+  <xacro:property name="box_size_13" value="0.00353 0.00000 0.00948"/>
+  <xacro:property name="box_size_14" value="0.026000000536441803 0.026000000536441803 0.028453040402382612"/>
+  <xacro:property name="box_size_15" value="0.00166 0.00000 0.01675"/>
+  <xacro:property name="box_size_16" value="0.013749999459832907 0.026100000366568565 0.042499999050050974"/>
+  <xacro:property name="box_size_17" value="0.013750000391155481 0.02599999960511923 0.035698844119906425"/>
+  <xacro:property name="mass_1" value="0.0"/>
+  <xacro:property name="mass_2" value="0.15476"/>
+  <xacro:property name="mass_3" value="0.01904"/>
+  <xacro:property name="mass_4" value="0.02423"/>
+  <xacro:property name="mass_5" value="0.00191"/>
+  <xacro:property name="mass_6" value="0.01827"/>
+  <xacro:property name="mass_7" value="0.00719"/>
+  <xacro:property name="mass_8" value="0.00473"/>
+  <xacro:property name="mass_9" value="0.03549"/>
+
+
+  
+  <link name="mount">
+    <collision>
+      <geometry>
+        <cylinder length="${mass_1}0999999955296517" radius="${mass_1}19931690767407417" /></geometry>
+        <origin rpy="0 0 0" xyz="0 0 -${mass_1}07" />
+    
+    </collision>
+    <inertial>
+      <mass value="${mass_1}" />
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <inertia ixx="${mass_1}" ixy="${mass_1}" ixz="${mass_1}" iyy="${mass_1}" iyz="${mass_1}" izz="${mass_1}" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/mount.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  
+   <link name="palm">
+    <collision>
+      <origin rpy="0 0 0" xyz="${mass_1}12 ${mass_1}0079 -${mass_1}2862" />
+      <geometry>
+        <box size="${box_size_2}" /></geometry>      
+    </collision>
+    <inertial>
+	    <mass value="${mass_2}" />
+	    <origin rpy="0 0 0" xyz="-${mass_1}1669 ${mass_1}0079 -${mass_1}2862" />
+	    <inertia ixx="${mass_1}0032705182" ixy="-${mass_1}0001050022" ixz="${mass_1}0005386046" iyy="${mass_1}0035100257" iyz="-${mass_1}0000337009" izz="${mass_1}0016323150" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/palm02.STL" />
+      </geometry>
+      <material name="Black">
+        <color rgba="0 0 0 1" />
+      </material>
+    </visual>
+  </link>
+
+
+
+  
+  <link name="thumb_basemotor">
+    <!-- <collision>
+      <geometry>
+        <box size="${box_size_3}" /></geometry>
+    </collision> -->
+    <inertial>
+    	<mass value="${mass_1}1904" />
+	    <origin rpy="0 0 0" xyz="${box_size_4}" />
+	    <inertia ixx="${mass_1}0000107197" ixy="${mass_1}0000008151" ixz="${mass_1}0000000000" iyy="${mass_1}0000344968" iyz="${mass_1}0000000000" izz="${mass_1}0000315305" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/thumb_basemotor.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="thumb_link_0">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_5}" />
+      <geometry>
+        <box size="${box_size_6}" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}2423" />
+	    <origin rpy="0 0 0" xyz="-${box_size_5}" />
+	    <inertia ixx="${mass_1}0001317338" ixy="${mass_1}0000000000" ixz="-${mass_1}0000386319" iyy="${mass_1}0001497641" iyz="${mass_1}0000000000" izz="${mass_1}0000318767" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/thumb_link_0.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="thumb_link_1">
+    <collision>
+	    <origin rpy="0 0 0" xyz="${box_size_7}" />
+      <geometry>
+        <box size="${box_size_8}" /></geometry>
+    </collision>
+    <inertial>
+	  <mass value="${mass_1}0191" />
+	    <origin rpy="0 0 0" xyz="${box_size_7}" />
+	    <inertia ixx="${mass_1}0000023689" ixy="${mass_1}0000000000" ixz="${mass_1}0000000784" iyy="${mass_1}0000007651" iyz="${mass_1}0000000000" izz="${mass_1}0000021019" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/thumb_link_1.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="thumb_link_2">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_9}" />
+      <geometry>
+        <box size="${box_size_10}" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}1827" />
+	    <origin rpy="0 0 0" xyz="-${box_size_9}" />
+	    <inertia ixx="${mass_1}0000796138" ixy="-${mass_1}0000001114" ixz="-${mass_1}0000053085" iyy="${mass_1}0000752132" iyz="${mass_1}0000001719" izz="${mass_1}0000105696" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/thumb_link_2.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="thumb_tip">
+    <collision>
+      <geometry>
+        <mesh filename="meshes/kistar/thumb_tip.STL" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}0719" />
+	    <origin rpy="0 0 0" xyz="-${box_size_11}" />
+	    <inertia ixx="${mass_1}0000240986" ixy="${mass_1}0000000000" ixz="-${mass_1}0000023287" iyy="${mass_1}0000235111" iyz="${mass_1}0000000000" izz="${mass_1}0000036696" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/thumb_tip.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+  
+  <link name="index_basemotor">
+    <!-- <collision>
+      <geometry>
+        <box size="${box_size_12}" /></geometry>
+    </collision> -->
+    <inertial>
+    	<mass value="${mass_1}1904" />
+    	<origin rpy="0 0 0" xyz="${mass_1}1338 ${mass_1}0095 -${mass_1}0207" />
+    	<inertia ixx="${mass_1}0000121099" ixy="${mass_1}0000030359" ixz="-${mass_1}0000056482" iyy="${mass_1}0000548403" iyz="-${mass_1}0000003164" izz="${mass_1}0000507172" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_basemotor.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="index_link_0">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_13}" />
+      <geometry>
+        <box size="${box_size_14}" /></geometry>
+    </collision>
+     <inertial>
+	    <mass value="${mass_1}0473" />
+	    <origin rpy="0 0 0" xyz="-${box_size_13}" />
+	    <inertia ixx="${mass_1}0000076951" ixy="${mass_1}0000000000" ixz="-${mass_1}0000009858" iyy="${mass_1}0000092515" iyz="${mass_1}0000000000" izz="${mass_1}0000062017" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_link_0.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="index_link_1">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_15}" />
+      <geometry>
+        <box size="${box_size_16}" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}3549" />
+	    <origin rpy="0 0 0" xyz="-${box_size_15}" />
+	    <inertia ixx="${mass_1}0001607025" ixy="${mass_1}0000000000" ixz="-${mass_1}0000098913" iyy="${mass_1}0001510746" iyz="${mass_1}0000000000" izz="${mass_1}0000219008" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_link_1.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="index_link_2">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_9}" />
+      <geometry>
+        <box size="${box_size_17}" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}1827" />
+	    <origin rpy="0 0 0" xyz="-${box_size_9}" />
+	    <inertia ixx="${mass_1}0000796138" ixy="-${mass_1}0000001114" ixz="-${mass_1}0000053085" iyy="${mass_1}0000752132" iyz="${mass_1}0000001719" izz="${mass_1}0000105696" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_link_2.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="index_tip">
+    <collision>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_tip.STL" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}0719" />
+	    <origin rpy="0 0 0" xyz="-${box_size_11}" />
+	    <inertia ixx="${mass_1}0000240986" ixy="${mass_1}0000000000" ixz="-${mass_1}0000023287" iyy="${mass_1}0000235111" iyz="${mass_1}0000000000" izz="${mass_1}0000036696" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_tip.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="middle_basemotor">
+    <!-- <collision>
+      <geometry>
+        <box size="${box_size_12}" /></geometry>
+    </collision> -->
+    <inertial>
+    	<mass value="${mass_1}1904" />
+    	<origin rpy="0 0 0" xyz="${mass_1}1338 ${mass_1}0095 -${mass_1}0207" />
+    	<inertia ixx="${mass_1}0000121099" ixy="${mass_1}0000030359" ixz="-${mass_1}0000056482" iyy="${mass_1}0000548403" iyz="-${mass_1}0000003164" izz="${mass_1}0000507172" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_basemotor.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="middle_link_0">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_13}" />
+      <geometry>
+        <box size="${box_size_14}" /></geometry>
+    </collision>
+     <inertial>
+	    <mass value="${mass_1}0473" />
+	    <origin rpy="0 0 0" xyz="-${box_size_13}" />
+	    <inertia ixx="${mass_1}0000076951" ixy="${mass_1}0000000000" ixz="-${mass_1}0000009858" iyy="${mass_1}0000092515" iyz="${mass_1}0000000000" izz="${mass_1}0000062017" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_link_0.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="middle_link_1">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_15}" />
+      <geometry>
+        <box size="${box_size_16}" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}3549" />
+	    <origin rpy="0 0 0" xyz="-${box_size_15}" />
+	    <inertia ixx="${mass_1}0001607025" ixy="${mass_1}0000000000" ixz="-${mass_1}0000098913" iyy="${mass_1}0001510746" iyz="${mass_1}0000000000" izz="${mass_1}0000219008" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_link_1.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="middle_link_2">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_9}" />
+      <geometry>
+        <box size="${box_size_17}" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}1827" />
+	    <origin rpy="0 0 0" xyz="-${box_size_9}" />
+	    <inertia ixx="${mass_1}0000796138" ixy="-${mass_1}0000001114" ixz="-${mass_1}0000053085" iyy="${mass_1}0000752132" iyz="${mass_1}0000001719" izz="${mass_1}0000105696" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_link_2.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="middle_tip">
+    <collision>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_tip.STL" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}0719" />
+	    <origin rpy="0 0 0" xyz="-${box_size_11}" />
+	    <inertia ixx="${mass_1}0000240986" ixy="${mass_1}0000000000" ixz="-${mass_1}0000023287" iyy="${mass_1}0000235111" iyz="${mass_1}0000000000" izz="${mass_1}0000036696" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_tip.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  
+  <link name="ring_basemotor">
+    <!-- <collision>
+      <geometry>
+        <box size="${box_size_12}" /></geometry>
+    </collision> -->
+    <inertial>
+    	<mass value="${mass_1}1904" />
+    	<origin rpy="0 0 0" xyz="${mass_1}1338 ${mass_1}0095 -${mass_1}0207" />
+    	<inertia ixx="${mass_1}0000121099" ixy="${mass_1}0000030359" ixz="-${mass_1}0000056482" iyy="${mass_1}0000548403" iyz="-${mass_1}0000003164" izz="${mass_1}0000507172" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_basemotor.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="ring_link_0">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_13}" />
+      <geometry>
+        <box size="${box_size_14}" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}0473" />
+	    <origin rpy="0 0 0" xyz="-${box_size_13}" />
+	    <inertia ixx="${mass_1}0000076951" ixy="${mass_1}0000000000" ixz="-${mass_1}0000009858" iyy="${mass_1}0000092515" iyz="${mass_1}0000000000" izz="${mass_1}0000062017" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_link_0.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="ring_link_1">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_15}" />
+      <geometry>
+        <box size="${box_size_16}" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}3549" />
+	    <origin rpy="0 0 0" xyz="-${box_size_15}" />
+	    <inertia ixx="${mass_1}0001607025" ixy="${mass_1}0000000000" ixz="-${mass_1}0000098913" iyy="${mass_1}0001510746" iyz="${mass_1}0000000000" izz="${mass_1}0000219008" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_link_1.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="ring_link_2">
+    <collision>
+	    <origin rpy="0 0 0" xyz="-${box_size_9}" />
+      <geometry>
+        <box size="${box_size_17}" /></geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}1827" />
+	    <origin rpy="0 0 0" xyz="-${box_size_9}" />
+	    <inertia ixx="${mass_1}0000796138" ixy="-${mass_1}0000001114" ixz="-${mass_1}0000053085" iyy="${mass_1}0000752132" iyz="${mass_1}0000001719" izz="${mass_1}0000105696" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_link_2.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="ring_tip">
+    <collision>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_tip.STL" />
+      </geometry>
+    </collision>
+    <inertial>
+	    <mass value="${mass_1}0719" />
+	    <origin rpy="0 0 0" xyz="-${box_size_11}" />
+	    <inertia ixx="${mass_1}0000240986" ixy="${mass_1}0000000000" ixz="-${mass_1}0000023287" iyy="${mass_1}0000235111" iyz="${mass_1}0000000000" izz="${mass_1}0000036696" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="meshes/kistar/finger_tip.STL" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="${box_size_1} 1" />
+      </material>
+    </visual>
+  </link>
+
+<joint name="kistar_mount_joint" type="fixed">
+  <origin rpy="0. 0. 0." xyz="-${mass_1}2325 0. ${mass_1}71" />
+  <parent link="mount" />
+  <child link="palm" />
+</joint>
+
+
+ 
+ <joint name="thumb_base_joint" type="fixed">
+  <origin rpy="-${mass_1}873 0. 0." xyz="0. ${mass_1}1224 -${mass_1}2988" />
+  <parent link="palm" />
+  <child link="thumb_basemotor" />
+</joint>
+
+<joint name="thumb_joint_0" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0." upper="1.5708" velocity="6.283" />
+  <origin rpy="-1.5708 0. 0." xyz="${mass_1}197 ${mass_1}02 0." />
+  <parent link="thumb_basemotor" />
+  <child link="thumb_link_0" />
+  <dynamics damping="${mass_1}414019" friction="${mass_1}523963" />
+</joint>
+
+<joint name="thumb_joint_1" type="revolute">
+  <axis xyz="0 0 1" />
+  <limit effort="0.2" lower="-1.5708" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="-${mass_1}02 0. ${mass_1}36" />
+  <parent link="thumb_link_0" />
+  <child link="thumb_link_1" />
+  <dynamics damping="${mass_1}0587541" friction="${mass_1}150275" />
+</joint>
+<joint name="thumb_joint_2" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="${mass_1}02 0. ${mass_1}102" />
+  <parent link="thumb_link_1" />
+  <child link="thumb_link_2" />
+  <dynamics damping="${mass_1}10638" friction="${mass_1}0616359" />
+</joint>
+<joint name="thumb_joint_3" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="0. 0. ${mass_1}335" />
+  <parent link="thumb_link_2" />
+  <child link="thumb_tip" />
+  <dynamics damping="${mass_1}226948" friction="${mass_1}227036" />
+</joint>
+
+<joint name="index_base_joint" type="fixed">
+  <origin rpy="-${mass_1}873 0. 0." xyz="0. ${mass_1}2883 -${mass_1}0126" />
+  <parent link="palm" />
+  <child link="index_basemotor" />
+</joint>
+
+<joint name="index_joint_0" type="revolute">
+  <axis xyz="1 0 0" />
+  <limit effort="0.2" lower="-0.261799" upper="0.261799" velocity="6.283" />
+  <origin rpy="-0. 0. 0." xyz="${mass_1}2325 0. ${mass_1}047" />
+  <parent link="index_basemotor" />
+  <child link="index_link_0" />
+  <dynamics damping="${mass_1}414019" friction="${mass_1}523963" />
+</joint>
+<joint name="index_joint_1" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="${mass_1}02 0. ${mass_1}19" />
+  <parent link="index_link_0" />
+  <child link="index_link_1" />
+  <dynamics damping="${mass_1}0587541" friction="${mass_1}150275" />
+</joint>
+<joint name="index_joint_2" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="0. 0. ${mass_1}335" />
+  <parent link="index_link_1" />
+  <child link="index_link_2" />
+  <dynamics damping="${mass_1}10638" friction="${mass_1}0616359" />
+</joint>
+<joint name="index_joint_3" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="0. 0. ${mass_1}267" />
+  <parent link="index_link_2" />
+  <child link="index_tip" />
+  <dynamics damping="${mass_1}226948" friction="${mass_1}227036" />
+</joint>
+
+<joint name="middle_base_joint" type="fixed">
+  <origin rpy="0. 0. 0." xyz="0. 0. 0." />
+  <parent link="palm" />
+  <child link="middle_basemotor" />
+</joint>
+
+<joint name="middle_joint_0" type="revolute">
+  <axis xyz="1 0 0" />
+  <limit effort="0.2" lower="-0.261799" upper="0.261799" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="${mass_1}2325 0. ${mass_1}047" />
+  <parent link="middle_basemotor" />
+  <child link="middle_link_0" />
+  <dynamics damping="${mass_1}414019" friction="${mass_1}523963" />
+</joint>
+
+<joint name="middle_joint_1" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="${mass_1}02 0. ${mass_1}19" />
+  <parent link="middle_link_0" />
+  <child link="middle_link_1" />
+  <dynamics damping="${mass_1}0587541" friction="${mass_1}150275" />
+</joint>
+
+<joint name="middle_joint_2" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0 0 0" xyz="0. 0. ${mass_1}335" />
+  <parent link="middle_link_1" />
+  <child link="middle_link_2" />
+  <dynamics damping="${mass_1}10638" friction="${mass_1}0616359" />
+</joint>
+
+<joint name="middle_joint_3" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0 0 0" xyz="0. 0. ${mass_1}267" />
+  <parent link="middle_link_2" />
+  <child link="middle_tip" />
+  <dynamics damping="${mass_1}226948" friction="${mass_1}227036" />
+</joint>
+ 
+<joint name="ring_base_joint" type="fixed">
+  <origin rpy="${mass_1}873 0. 0." xyz="0. -${mass_1}2883 -${mass_1}0126" />
+  <parent link="palm" />
+  <child link="ring_basemotor" />
+</joint>
+
+<joint name="ring_joint_0" type="revolute">
+  <axis xyz="1 0 0" />
+  <limit effort="0.2" lower="-0.261799" upper="0.261799" velocity="6.283" />
+  <origin rpy="-0. 0. 0." xyz="${mass_1}2325 0. ${mass_1}047" />
+  <parent link="ring_basemotor" />
+  <child link="ring_link_0" />
+  <dynamics damping="${mass_1}414019" friction="${mass_1}523963" />
+</joint>
+<joint name="ring_joint_1" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="${mass_1}02 0. ${mass_1}19" />
+  <parent link="ring_link_0" />
+  <child link="ring_link_1" />
+  <dynamics damping="${mass_1}0587541" friction="${mass_1}150275" />
+</joint>
+<joint name="ring_joint_2" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="0. 0. ${mass_1}335" />
+  <parent link="ring_link_1" />
+  <child link="ring_link_2" />
+  <dynamics damping="${mass_1}10638" friction="${mass_1}0616359" />
+</joint>
+<joint name="ring_joint_3" type="revolute">
+  <axis xyz="0 1 0" />
+  <limit effort="0.2" lower="0" upper="1.5708" velocity="6.283" />
+  <origin rpy="0. 0. 0." xyz="0. 0. ${mass_1}267" />
+  <parent link="ring_link_2" />
+  <child link="ring_tip" />
+  <dynamics damping="${mass_1}226948" friction="${mass_1}227036" />
+</joint>
+
+</robot>

@@ -1,13 +1,13 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version='1.0'?>
 <robot name="kistar_hand">
 
   
   <link name="mount">
     <collision>
+        <origin rpy="0 0 0" xyz="0 0 0" />
       <geometry>
-        <cylinder length="0.00999999955296517" radius="0.019931690767407417" /></geometry>
-        <origin rpy="0 0 0" xyz="0 0 -0.007" />
-    
+        <mesh filename="meshes/kistar/mount.STL" /></geometry>
+        <!-- <cylinder length="0.00999999955296517" radius="0.019931690767407417" /> -->
     </collision>
     <inertial>
       <mass value="0.0" />
@@ -27,10 +27,9 @@
   
    <link name="palm">
     <collision>
+      <origin rpy="0 0 0" xyz="0.012 0.00079 -0.02862" />
       <geometry>
-        <box size="0.04700000025331974 0.0895427018404007 0.08685353584587574" /></geometry>
-        <origin rpy="0 0 0" xyz="0.012 0.00079 -0.02862" />
-      
+        <box size="0.04700000025331974 0.0895427018404007 0.08685353584587574" /></geometry>      
     </collision>
     <inertial>
 	    <mass value="0.15476" />
@@ -51,10 +50,10 @@
 
   
   <link name="thumb_basemotor">
-    <!-- <collision>
+    <collision>
       <geometry>
         <box size="0.02400000027120114 0.01919999998062849 0.024000000208616257" /></geometry>
-    </collision> -->
+    </collision>
     <inertial>
     	<mass value="0.01904" />
 	    <origin rpy="0 0 0" xyz="0.01002 0.00044 0.00000" />
@@ -154,10 +153,11 @@
   </link>
   
   <link name="index_basemotor">
-    <!-- <collision>
+    <collision>
+    	<origin rpy="0 0 0" xyz="0.01338 0.00095 -0.00207" />
       <geometry>
         <box size="0.028149999655596912 0.01919999998062849 0.024000000208616257" /></geometry>
-    </collision> -->
+    </collision>
     <inertial>
     	<mass value="0.01904" />
     	<origin rpy="0 0 0" xyz="0.01338 0.00095 -0.00207" />
@@ -257,10 +257,11 @@
   </link>
 
   <link name="middle_basemotor">
-    <!-- <collision>
+    <collision>
+    	<origin rpy="0 0 0" xyz="0.01338 0.00095 -0.00207" />
       <geometry>
         <box size="0.028149999655596912 0.01919999998062849 0.024000000208616257" /></geometry>
-    </collision> -->
+    </collision>
     <inertial>
     	<mass value="0.01904" />
     	<origin rpy="0 0 0" xyz="0.01338 0.00095 -0.00207" />
@@ -361,10 +362,11 @@
 
   
   <link name="ring_basemotor">
-    <!-- <collision>
+    <collision>
+    	<origin rpy="0 0 0" xyz="0.01338 0.00095 -0.00207" />
       <geometry>
         <box size="0.028149999655596912 0.01919999998062849 0.024000000208616257" /></geometry>
-    </collision> -->
+    </collision>
     <inertial>
     	<mass value="0.01904" />
     	<origin rpy="0 0 0" xyz="0.01338 0.00095 -0.00207" />
@@ -470,9 +472,7 @@
   <child link="palm" />
 </joint>
 
-
- 
- <joint name="thumb_base_joint" type="fixed">
+<joint name="thumb_base_joint" type="fixed">
   <origin rpy="-0.0873 0. 0." xyz="0. 0.01224 -0.02988" />
   <parent link="palm" />
   <child link="thumb_basemotor" />
