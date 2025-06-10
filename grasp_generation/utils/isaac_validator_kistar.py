@@ -37,28 +37,10 @@ class IsaacValidator():
         self.hand_rigid_body_sets = []
         self.obj_rigid_body_sets = []
         self.joint_names = joint_names = [
-            'robot0:FFJ3',
-            'robot0:FFJ2',
-            'robot0:FFJ1',
-            'robot0:FFJ0',
-            'robot0:MFJ3',
-            'robot0:MFJ2',
-            'robot0:MFJ1',
-            'robot0:MFJ0',
-            'robot0:RFJ3',
-            'robot0:RFJ2',
-            'robot0:RFJ1',
-            'robot0:RFJ0',
-            'robot0:LFJ4',
-            'robot0:LFJ3',
-            'robot0:LFJ2',
-            'robot0:LFJ1',
-            'robot0:LFJ0',
-            'robot0:THJ4',
-            'robot0:THJ3',
-            'robot0:THJ2',
-            'robot0:THJ1',
-            'robot0:THJ0'
+        'robot0:FFJ3', 'robot0:FFJ2', 'robot0:FFJ1', 'robot0:FFJ0',
+        'robot0:MFJ3', 'robot0:MFJ2', 'robot0:MFJ1', 'robot0:MFJ0',
+        'robot0:RFJ3', 'robot0:RFJ2', 'robot0:RFJ1', 'robot0:RFJ0',
+        'robot0:LFJ4', 'robot0:LFJ3', 'robot0:LFJ2', 'robot0:LFJ1',
         ]
         self.hand_asset = None
         self.obj_asset = None
@@ -227,8 +209,6 @@ class IsaacValidator():
         gym.set_actor_dof_properties(env, hand_actor_handle, hand_props)
         dof_states = gym.get_actor_dof_states(env, hand_actor_handle,
                                               gymapi.STATE_ALL)
-        print("self.joint_names", self.joint_names)
-        from IPython import embed; embed(); exit();
         for i, joint in enumerate(self.joint_names):
             joint_idx = gym.find_actor_dof_index(env, hand_actor_handle,
                                                  joint,
