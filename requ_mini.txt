@@ -1,0 +1,15 @@
+fvcore>=0.1.5
+iopath
+pyyaml>=5.1
+tqdm
+numpy 
+pillow
+ninja
+urdf_parser_py
+scipy
+networkx  # soft dependency for trimesh
+rtree  # soft dependency for trimesh
+pyyaml
+lxml
+tqdm
+trimesh 

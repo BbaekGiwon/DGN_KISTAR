@@ -1,0 +1,59 @@
+program: sweep_script/sweep_train.sh
+method: bayes  # Bayesian optimization to search for best parameters
+metric:
+  name: final_avg_energy # energy.mean()  
+  goal: minimize
+parameters:
+  # switch_possibility-scale:
+  #   min: -5.0
+  #   max: -0.1
+  # mu-scale:
+  #   min: 2.0
+  #   max: 10.0
+  stepsize_period:
+    min: 0.001
+    max: 0.05
+  annealing_period:
+    min: 30.0
+    max: 300.0
+  temperature_decay:
+    min: 0.9
+    max: 0.999
+  w_dis:
+    min: 100.0
+    max: 500.0
+  w_pen:
+    min: 100.0
+    max: 500.0
+  w_spen:
+    min: 10.0
+    max: 500.0
+  # w_joints-scale:
+  #   min: 2.0
+  #   max: 10.0
+
+  # Initialization Settings
+  # jitter_strength-scale:
+  #   min: 2.0
+  #   max: 10.0  
+  distance_lower:
+    min: 0.005
+    max: 0.2 
+  distance_upper:
+    min: 0.01
+    max: 0.3  
+
+  # Energy Treshold
+  # thres_fc-scale:
+  #   min: 2.0
+  #   max: 10.0  
+  # thres_dis-scale:
+  #   min: 0.001
+  #   max: 10.0  
+  thres_pen:
+    min: 0.001
+    max: 0.01 
+
+command:
+  - /bin/bash
+  - ${program}

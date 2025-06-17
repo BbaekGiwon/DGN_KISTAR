@@ -35,10 +35,8 @@ try:
 except RuntimeError:
     pass
 
-
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 np.seterr(all='raise')
-
 
 def generate(args_list):
     args, object_code_list, id, gpu_list = args_list
@@ -47,7 +45,6 @@ def generate(args_list):
     torch.manual_seed(args.seed)
 
     # prepare models
-
     n_objects = len(object_code_list)
 
     identity = multiprocessing.current_process()._identity
@@ -192,7 +189,7 @@ if __name__ == '__main__':
     parser.add_argument('--todo', action='store_true')
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--n_contact', default=4, type=int)
-    parser.add_argument('--max_total_batch_size', default=1000, type=int)
+    parser.add_argument('--max_total_batch_size', default=600, type=int)
     parser.add_argument('--batch_size_each', default=600, type=int)
     parser.add_argument('--n_iter', default=6000, type=int)
     # hyper parameters
@@ -204,19 +201,19 @@ if __name__ == '__main__':
     parser.add_argument('--annealing_period', default=100, type=int)
     parser.add_argument('--temperature_decay', default=0.99, type=float)
     parser.add_argument('--w_dis', default=300.0, type=float)
-    parser.add_argument('--w_pen', default=200.0, type=float)
+    parser.add_argument('--w_pen', default=300.0, type=float)
     parser.add_argument('--w_spen', default=100.0, type=float)
     parser.add_argument('--w_joints', default=1.0, type=float)
     # initialization settings
-    parser.add_argument('--jitter_strength', default=0.2, type=float)
+    parser.add_argument('--jitter_strength', default=0.1, type=float)
     parser.add_argument('--distance_lower', default=0.02, type=float)
-    parser.add_argument('--distance_upper', default=0.03, type=float)
+    parser.add_argument('--distance_upper', default=0.05, type=float)
     parser.add_argument('--theta_lower', default=-math.pi / 6, type=float)
     parser.add_argument('--theta_upper', default=math.pi / 6, type=float)
     # energy thresholds
     parser.add_argument('--thres_fc', default=0.3, type=float)
     parser.add_argument('--thres_dis', default=0.005, type=float)
-    parser.add_argument('--thres_pen', default=0.0008, type=float)
+    parser.add_argument('--thres_pen', default=0.005, type=float)
 
     args = parser.parse_args()
 

@@ -43,6 +43,7 @@ class ObjectModel:
         self.object_mesh_list = None
         self.object_face_verts_list = None
         self.scale_choice = torch.tensor([0.06, 0.08, 0.1, 0.12, 0.15], dtype=torch.float, device=self.device)
+        # self.scale_choice = torch.tensor([0.04, 0.06, 0.08, 0.1], dtype=torch.float, device=self.device)
 
     def initialize(self, object_code_list):
         """

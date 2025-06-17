@@ -1,4 +1,5 @@
 # DexGraspNet: A Large-Scale Robotic Dexterous Grasp Dataset for General Objects Based on Simulation
+# With KISTAR
 
 This is the official repository of [DexGraspNet: A Large-Scale Robotic Dexterous Grasp Dataset for General Objects Based on Simulation](https://arxiv.org/abs/2210.02697).
 
@@ -51,22 +52,79 @@ DexGraspNet
 |  +-- TorchSDF
 ```
 
-## Quick Example
-
+## Installation (Full Developer Environment)
 ```bash
 conda create -n your_env python=3.7
 conda activate your_env
 
-# for quick example, cpu version is OK.
-conda install pytorch cpuonly -c pytorch
-conda install ipykernel
-conda install transforms3d
-conda install trimesh
-pip install pyyaml
-pip install lxml
+conda install pip numpy ninja cmake -y
+pip install torch==1.10.2+cu113 torchvision==0.11.3+cu113 torchaudio==0.10.2+cu113 \
+-f https://download.pytorch.org/whl/cu113/torch_stable.html
+
+
+export CUDA_HOME=$CONDA_PREFIX
+export PATH=$CUDA_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$CUDA_HOME/lib:$LD_LIBRARY_PATH
+
+# Test nvcc -V (11.3?)
+pip install -r 
+nvcc -V # Build cuda_11.3.r11.3
+conda install transforms3d trimesh plotly -y
+conda install ipykernel transforms3d -y
+```
+
+## thirdparty dependencies
+```bash
+export CUDA_HOME=$CONDA_PREFIX
+export PATH=$CUDA_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$CUDA_HOME/lib:$LD_LIBRARY_PATH
 
 cd thirdparty/pytorch_kinematics
 pip install -e .
+
+### INSTALL THIRDPARTY ###
+# Install pytorch3d
+git clone https://github.com/facebookresearch/pytorch3d.git
+cd pytorch3d
+pip install -e .
+
+# INSTALL Isaacgym
+cd isaacgym/python
+pip install -e .
+pip show isaacgym
+
+# INSTALL TorchSDF
+cd DexGraspNet/thirdparty
+git clone https://github.com/wrc042/TorchSDF.git
+cd TorchSDF
+git checkout 0.1.0
+bash install.sh
+
+# INSTALL TorchSDF
+cd DexGraspNet/thirdparty
+git clone https://github.com/hjwdzh/ManifoldPlus.git
+cd ManifoldPlus
+git submodule update --init --recursive
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j8
+
+#CoACD
+git clone --recurse-submodules https://github.com/SarahWeiii/CoACD.git
+cd CoACD
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make
+
+```
+
+## Installation for Development
+```bash
+conda activate your_env
+pip install -r dex_requirements.txt
+conda env update -f dexgraspnet.yml
 ```
 
 Then you can run `grasp_generation/quick_example.ipynb`.
