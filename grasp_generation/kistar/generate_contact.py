@@ -1,106 +1,76 @@
 import xml.etree.ElementTree as ET
 import numpy as np
+import trimesh as tm
 import json
-
-def sample_box_points(size, n_points_z=3, n_points_y=2, fixed_x=None):
-    """
-    Box의 한 면(예: 손가락 앞면)에 균일 샘플링.
-    - size: (x, y, z) 박스 크기
-    - n_points_z: z축 방향 샘플 개수
-    - n_points_y: y축 방향 샘플 개수
-    - fixed_x: 박스 앞면(x) 좌표 (None이면 x/2 사용)
-    """
-    x, y, z = size
-    # y, x, z = size
-    # 앞면 기준, x/2 지점에서 샘플링
-    px = x/2 if fixed_x is None else fixed_x
-    # y, z 범위 샘플링
-    y_samples = np.linspace(-y/4, y/4, n_points_y)
-    z_samples = np.linspace(z*0.25, z*0.75, n_points_z)  # 양끝은 피함
-    points = []
-    for yy in y_samples:
-        for zz in z_samples:
-            points.append([px, yy, zz])
-    return points
+import os
 
 
-def sample_box_points_y(size, n_points_z=4, n_points_x=2, fixed_y=None):
-    """
-    Box의 한 면(예: 손가락 옆면)에 균일 샘플링.
-    - size: (x, y, z) 박스 크기
-    - n_points_z: z축 방향 샘플 개수
-    - n_points_x: x축 방향 샘플 개수
-    - fixed_y: 샘플링할 y 좌표 (None이면 y/2 사용)
-    """
-    x, y, z = size
-    # 고정할 y 위치
-    py = y/2 if fixed_y is None else fixed_y
-
-    # x, z 범위 샘플링
-    x_samples = np.linspace(-x/2, x/2, n_points_x)
-    z_samples = np.linspace(z * 0.1, z * 0.9, n_points_z)  # 위·아래 끝점은 피함
-
-    points = []
-    for xx in x_samples:
-        for zz in z_samples:
-            # [x, y, z]
-            points.append([xx, py, zz])
-    return points
+def sample_inner_face(size, origin, n_z=3, n_y=2):
+    """Sample contact candidates on the +X (inner/grasping) face of a finger-link
+    collision box. Box is centered at the collision <origin>; rpy assumed 0."""
+    sx, sy, sz = size
+    ox, oy, oz = origin
+    xs = ox + sx / 2.0
+    ys = oy + np.linspace(-sy / 4.0, sy / 4.0, n_y)
+    zs = oz + np.linspace(-sz / 4.0, sz / 4.0, n_z)
+    return [[float(xs), float(y), float(z)] for y in ys for z in zs]
 
 
-def sample_box_points_z(size, n_points_x=2, n_points_y=4, fixed_z=None):
-    """
-    Box의 한 면(예: 손가락 윗면)에 균일 샘플링.
-    - size: (x, y, z) 박스 크기
-    - n_points_x: x축 방향 샘플 개수
-    - n_points_y: y축 방향 샘플 개수
-    - fixed_z: 샘플링할 z 좌표 (None이면 z/2 사용)
-    """
-    x, y, z = size
-    # 고정할 z 위치
-    pz = z/2 if fixed_z is None else fixed_z
+def _fps(pts, n):
+    pts = np.asarray(pts, dtype=float)
+    idx = [0]
+    d = np.linalg.norm(pts - pts[0], axis=1)
+    for _ in range(1, n):
+        i = int(d.argmax())
+        idx.append(i)
+        d = np.minimum(d, np.linalg.norm(pts - pts[i], axis=1))
+    return pts[idx]
 
-    # x, y 범위 샘플링
-    x_samples = np.linspace(-x/2, x/2, n_points_x)
-    y_samples = np.linspace(-y/2, y/2, n_points_y)
 
-    points = []
-    for xx in x_samples:
-        for yy in y_samples:
-            # [x, y, z]
-            points.append([xx, yy, pz])
-    return points  
+def sample_tip_points(mesh_file, n=5):
+    """Sample n contact candidates on the inner-distal pad of a fingertip mesh.
+    Inner = +X side (fingers curl toward +X); distal = upper Z. Uses mesh
+    vertices (guaranteed on surface) filtered to the inner-distal region + FPS."""
+    m = tm.load(mesh_file, force="mesh", process=False)
+    V = m.vertices
+    xmax = V[:, 0].max()
+    zmin, zmax = V[:, 2].min(), V[:, 2].max()
+    mask = (V[:, 0] > xmax - 0.004) & (V[:, 2] > zmin + 0.35 * (zmax - zmin))
+    cand = V[mask]
+    if len(cand) < n:
+        cand = V[V[:, 0] > xmax - 0.006]
+    return [[float(a) for a in p] for p in _fps(cand, n)]
 
-def sample_tip_point(size):
-    """_tip의 경우 단일 contact point (박스 앞면 중앙)"""
-    x, y, z = size
-    return [[-0.00190, 0,0.01626]]
 
 def parse_urdf_and_generate_json(urdf_path, output_json):
     tree = ET.parse(urdf_path)
     root = tree.getroot()
+    base = os.path.dirname(os.path.abspath(urdf_path))
     contact_dict = {}
 
     for link in root.findall("link"):
-        name = link.attrib['name']
-        # 기본값: 빈 리스트
+        name = link.attrib["name"]
         contact_points = []
-        # collision geometry 추출
+
         collision = link.find("collision")
         if collision is not None:
             geometry = collision.find("geometry")
-            if geometry is not None:
-                box = geometry.find("box")
-                if box is not None:
-                    size_str = box.attrib['size']
-                    size = [float(s) for s in size_str.split()]
-                    contact_points = sample_box_points(size)
+            box = geometry.find("box") if geometry is not None else None
+            if box is not None:
+                size = [float(s) for s in box.attrib["size"].split()]
+                origin = collision.find("origin")
+                off = [float(s) for s in origin.attrib["xyz"].split()] \
+                    if (origin is not None and "xyz" in origin.attrib) else [0.0, 0.0, 0.0]
+                contact_points = sample_inner_face(size, off)
 
-        if name in {"palm", "thumb_basemotor", "index_basemotor", "middle_basemotor", "ring_basemotor"}:
+        if name in {"palm", "mount", "thumb_basemotor", "index_basemotor",
+                    "middle_basemotor", "ring_basemotor"} or name.endswith("_link_0"):
+            # palm, mount, base motors, and the base (abduction) link carry no contacts
             contact_dict[name] = []
-        elif name in {"index_tip", "middle_tip", "ring_tip", "thumb_tip"}:
-            # contact_dict[name] = [[-0.00190, 0,0.01626]]
-            contact_dict[name] = [[0.0052, 0.0, 0.01626]]
+        elif name.endswith("_tip"):
+            mesh_file = os.path.join(base, "meshes", "kistar",
+                                     "thumb_tip.STL" if name == "thumb_tip" else "finger_tip.STL")
+            contact_dict[name] = sample_tip_points(mesh_file, n=5)
         else:
             contact_dict[name] = contact_points
 
@@ -108,7 +78,7 @@ def parse_urdf_and_generate_json(urdf_path, output_json):
         json.dump(contact_dict, f, indent=2)
     print(f"Saved contact_points.json to {output_json}")
 
-# 사용 예시
+
 urdf_path = "./kistar.urdf"
 output_json = "./contact_points.json"
 parse_urdf_and_generate_json(urdf_path, output_json)

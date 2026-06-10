@@ -181,102 +181,14 @@ class HandModel:
         # self.adjacency_mask[self.link_name_to_link_index['base_link'], self.link_name_to_link_index['link_13.0']] = True
         # self.adjacency_mask[self.link_name_to_link_index['link_13.0'], self.link_name_to_link_index['base_link']] = True
 
-        self.hand_pose = None
-        self.contact_point_indices = None
-        self.global_translation = None
-        self.global_rotation = None
-        self.current_status = None
-        self.contact_points = None
-
-        # set joint limits
-        self.joints_lower = torch.tensor(
-            [
-                joint.limit.lower
-                for joint in self.robot.joints
-                if joint.joint_type == "revolute"
-            ],
-            dtype=torch.float,
-            device=device,
-        )
-        self.joints_upper = torch.tensor(
-            [
-                joint.limit.upper
-                for joint in self.robot.joints
-                if joint.joint_type == "revolute"
-            ],
-            dtype=torch.float,
-            device=device,
-        )
-
-        # sample surface points
-        total_area = sum(areas.values())
-        num_samples = dict(
-            [
-                (link_name, int(areas[link_name] / total_area * n_surface_points))
-                for link_name in self.mesh
-            ]
-        )
-        num_samples[list(num_samples.keys())[0]] += n_surface_points - sum(
-            num_samples.values()
-        )
-        for link_name in self.mesh:
-            if num_samples[link_name] == 0:
-                self.mesh[link_name]["surface_points"] = torch.tensor(
-                    [], dtype=torch.float, device=device
-                ).reshape(0, 3)
-                continue
-            mesh = pytorch3d.structures.Meshes(
-                self.mesh[link_name]["vertices"].unsqueeze(0),
-                self.mesh[link_name]["faces"].unsqueeze(0),
-            )
-            dense_point_cloud = pytorch3d.ops.sample_points_from_meshes(
-                mesh, num_samples=100 * num_samples[link_name]
-            )
-            surface_points = pytorch3d.ops.sample_farthest_points(
-                dense_point_cloud, K=num_samples[link_name]
-            )[0][0]
-            surface_points.to(dtype=float, device=device)
-            self.mesh[link_name]["surface_points"] = surface_points
-
-        # indexing
-        self.link_name_to_link_index = dict(
-            zip([link_name for link_name in self.mesh], range(len(self.mesh)))
-        )
-
-        self.contact_candidates = [
-            self.mesh[link_name]["contact_candidates"] for link_name in self.mesh
-        ]
-        self.global_index_to_link_index = sum(
-            [
-                [i] * len(contact_candidates)
-                for i, contact_candidates in enumerate(self.contact_candidates)
-            ],
-            [],
-        )
-        self.contact_candidates = torch.cat(self.contact_candidates, dim=0)
-        self.global_index_to_link_index = torch.tensor(
-            self.global_index_to_link_index, dtype=torch.long, device=device
-        )
-        self.n_contact_candidates = self.contact_candidates.shape[0]
-
-        self.penetration_keypoints = [
-            self.mesh[link_name]["penetration_keypoints"] for link_name in self.mesh
-        ]
-        self.global_index_to_link_index_penetration = sum(
-            [
-                [i] * len(penetration_keypoints)
-                for i, penetration_keypoints in enumerate(self.penetration_keypoints)
-            ],
-            [],
-        )
+        # penetration keypoints
+        self.penetration_keypoints = [self.mesh[link_name]['penetration_keypoints'] for link_name in self.mesh]
+        self.global_index_to_link_index_penetration = sum([[i] * len(penetration_keypoints) for i, penetration_keypoints in enumerate(self.penetration_keypoints)], [])
         self.penetration_keypoints = torch.cat(self.penetration_keypoints, dim=0)
-        self.global_index_to_link_index_penetration = torch.tensor(
-            self.global_index_to_link_index_penetration, dtype=torch.long, device=device
-        )
+        self.global_index_to_link_index_penetration = torch.tensor(self.global_index_to_link_index_penetration, dtype=torch.long, device=device)
         self.n_keypoints = self.penetration_keypoints.shape[0]
 
         # parameters
-
         self.hand_pose = None
         self.contact_point_indices = None
         self.global_translation = None
@@ -360,15 +272,14 @@ class HandModel:
         dis = []
         x = (x - self.global_translation.unsqueeze(1)) @ self.global_rotation
         for link_name in self.mesh:
+            # Links excluded from the object->hand penetration distance (E_pen):
+            # the arm mount and the four finger base motors (housings near the palm).
             if link_name in [
-                "robot0:forearm",
-                "robot0:wrist_child",
-                "robot0:ffknuckle_child",
-                "robot0:mfknuckle_child",
-                "robot0:rfknuckle_child",
-                "robot0:lfknuckle_child",
-                "robot0:thbase_child",
-                "robot0:thhub_child",
+                "mount",
+                "thumb_basemotor",
+                "index_basemotor",
+                "middle_basemotor",
+                "ring_basemotor",
             ]:
                 continue
             matrix = self.current_status[link_name].get_matrix()

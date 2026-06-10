@@ -70,3 +70,10 @@ _build
 **/model.config
 **/coacd.urdf
 *.npy
+# KISTAR data artifacts (large, not for repo)
+**/*.npz
+data/data_urdf/
+data/vis_all/
+data/vis_v3/
+data/*.png
+**/*.bak_*

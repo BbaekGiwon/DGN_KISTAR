@@ -20,6 +20,7 @@ from tqdm import tqdm
 import math
 import random
 import transforms3d
+import wandb
 
 from utils.kistar_model import HandModel
 from utils.object_model import ObjectModel
@@ -48,14 +49,22 @@ def generate(args_list):
     n_objects = len(object_code_list)
 
     identity = multiprocessing.current_process()._identity
-    worker = identity[0] if identity else 1  # default to 1 if running in main process
-    # worker = multiprocessing.current_process()._identity[0]
+    worker = identity[0] if identity else 1
     os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list[worker - 1]
     device = torch.device('cuda')
 
+    # wandb init (one run per worker)
+    if args.wandb:
+        run = wandb.init(
+            project=args.wandb_project,
+            name=f'{args.wandb_name}_w{worker}' if args.wandb_name else None,
+            config=vars(args),
+            reinit=True,
+        )
+
     hand_model = HandModel(
         urdf_path="kistar/kistar.urdf",
-        mesh_path="/home/chanyoung/isaac_ws/DexGrasp_KIST/grasp_generation/kistar",
+        mesh_path=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "kistar"),
         contact_points_path="kistar/contact_points.json",
         penetration_points_path="kistar/penetration_points.json",
         n_surface_points=1000, 
@@ -115,35 +124,52 @@ def generate(args_list):
     #         E_spen[accept] = new_E_spen[accept]
     #         E_joints[accept] = new_E_joints[accept]
 
+    n_accept_total = 0
     for step in range(1, args.n_iter + 1):
-        before = hand_model.hand_pose.clone()
         s = optimizer.try_step()
         optimizer.zero_grad()
         new_energy, new_E_fc, new_E_dis, new_E_pen, new_E_spen, new_E_joints = cal_energy(hand_model, object_model, verbose=True, **weight_dict)
         new_energy.sum().backward(retain_graph=True)
         with torch.no_grad():
             accept, temp = optimizer.accept_step(energy, new_energy)
+            n_accept = accept.sum().item()
+            n_accept_total += n_accept
             if accept.any():
-                # print(f"Step {step}: accepted at temp {temp:.2f}, Δpose max {(hand_model.hand_pose - before).abs().max():.4f}")
-                energy[accept] = new_energy[accept]
-                E_dis[accept] = new_E_dis[accept]
-                E_fc[accept] = new_E_fc[accept]
-                E_pen[accept] = new_E_pen[accept]
-                E_spen[accept] = new_E_spen[accept]
+                energy[accept]   = new_energy[accept]
+                E_dis[accept]    = new_E_dis[accept]
+                E_fc[accept]     = new_E_fc[accept]
+                E_pen[accept]    = new_E_pen[accept]
+                E_spen[accept]   = new_E_spen[accept]
                 E_joints[accept] = new_E_joints[accept]
 
         if step % 500 == 0:
-            print(f"[{step}] current energy: {energy.mean().item():.4f}")
+            accept_rate = n_accept_total / (500 * energy.shape[0])
+            n_accept_total = 0
+            print(f"[{step}] energy={energy.mean():.3f}  E_fc={E_fc.mean():.3f}  "
+                  f"E_dis={E_dis.mean():.4f}  E_pen={E_pen.mean():.4f}  "
+                  f"accept={accept_rate*100:.1f}%  T={temp:.3f}", flush=True)
+            if args.wandb:
+                wandb.log({
+                    'step': step,
+                    'energy':   energy.mean().item(),
+                    'E_fc':     E_fc.mean().item(),
+                    'E_dis':    E_dis.mean().item(),
+                    'E_pen':    E_pen.mean().item(),
+                    'E_spen':   E_spen.mean().item(),
+                    'E_joints': E_joints.mean().item(),
+                    'temperature': temp.item(),
+                    'accept_rate': accept_rate,
+                })
 
 
     # save results
     translation_names = ['WRJTx', 'WRJTy', 'WRJTz']
     rot_names = ['WRJRx', 'WRJRy', 'WRJRz']
     joint_names = [
-        'robot0:FFJ3', 'robot0:FFJ2', 'robot0:FFJ1', 'robot0:FFJ0',
-        'robot0:MFJ3', 'robot0:MFJ2', 'robot0:MFJ1', 'robot0:MFJ0',
-        'robot0:RFJ3', 'robot0:RFJ2', 'robot0:RFJ1', 'robot0:RFJ0',
-        'robot0:LFJ4', 'robot0:LFJ3', 'robot0:LFJ2', 'robot0:LFJ1',
+        'thumb_joint_0',  'thumb_joint_1',  'thumb_joint_2',  'thumb_joint_3',
+        'index_joint_0',  'index_joint_1',  'index_joint_2',  'index_joint_3',
+        'middle_joint_0', 'middle_joint_1', 'middle_joint_2', 'middle_joint_3',
+        'ring_joint_0',   'ring_joint_1',   'ring_joint_2',   'ring_joint_3',
     ]
 
     for i, object_code in enumerate(object_code_list):
@@ -177,6 +203,24 @@ def generate(args_list):
             ))
         np.save(os.path.join(args.result_path, object_code + '.npy'), data_list, allow_pickle=True)
 
+        # wandb: per-object final summary
+        if args.wandb:
+            e_fc_arr  = np.array([d['E_fc']  for d in data_list])
+            e_dis_arr = np.array([d['E_dis'] for d in data_list])
+            e_pen_arr = np.array([d['E_pen'] for d in data_list])
+            fc_pass = (e_fc_arr < args.thres_fc) & (e_dis_arr < args.thres_dis) & (e_pen_arr < args.thres_pen)
+            wandb.log({
+                f'{object_code}/fc_pass_rate': fc_pass.mean(),
+                f'{object_code}/fc_pass_n':    fc_pass.sum(),
+                f'{object_code}/E_fc_mean':    e_fc_arr.mean(),
+                f'{object_code}/E_dis_mean':   e_dis_arr.mean(),
+                f'{object_code}/E_pen_mean':   e_pen_arr.mean(),
+            })
+            print(f'  [{object_code}] FC pass: {fc_pass.sum()}/{len(data_list)} = {fc_pass.mean()*100:.1f}%', flush=True)
+
+    if args.wandb:
+        wandb.finish()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -186,6 +230,10 @@ if __name__ == '__main__':
     parser.add_argument('--object_code_list', nargs='*', type=str)
     parser.add_argument('--all', action='store_true')
     parser.add_argument('--overwrite', action='store_true')
+    # wandb
+    parser.add_argument('--wandb', action='store_true')
+    parser.add_argument('--wandb_project', default='kistar-grasp-gen', type=str)
+    parser.add_argument('--wandb_name', default=None, type=str)
     parser.add_argument('--todo', action='store_true')
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--n_contact', default=4, type=int)
@@ -195,14 +243,14 @@ if __name__ == '__main__':
     # hyper parameters
     parser.add_argument('--switch_possibility', default=0.5, type=float)
     parser.add_argument('--mu', default=0.98, type=float)
-    parser.add_argument('--step_size', default=0.01, type=float)
+    parser.add_argument('--step_size', default=0.005, type=float)
     parser.add_argument('--stepsize_period', default=50, type=int)
-    parser.add_argument('--starting_temperature', default=30, type=float)
-    parser.add_argument('--annealing_period', default=100, type=int)
-    parser.add_argument('--temperature_decay', default=0.99, type=float)
-    parser.add_argument('--w_dis', default=300.0, type=float)
-    parser.add_argument('--w_pen', default=300.0, type=float)
-    parser.add_argument('--w_spen', default=100.0, type=float)
+    parser.add_argument('--starting_temperature', default=18, type=float)
+    parser.add_argument('--annealing_period', default=30, type=int)
+    parser.add_argument('--temperature_decay', default=0.95, type=float)
+    parser.add_argument('--w_dis', default=100.0, type=float)
+    parser.add_argument('--w_pen', default=100.0, type=float)
+    parser.add_argument('--w_spen', default=10.0, type=float)
     parser.add_argument('--w_joints', default=1.0, type=float)
     # initialization settings
     parser.add_argument('--jitter_strength', default=0.1, type=float)

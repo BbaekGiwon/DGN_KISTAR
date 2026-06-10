@@ -33,26 +33,24 @@ if __name__ == '__main__':
     # if index is received, then the debug mode is on
     parser.add_argument('--index', type=int)
     parser.add_argument('--no_force', action='store_true')
-    parser.add_argument('--thres_cont', default=0.002, type=float)
-    parser.add_argument('--dis_move', default=0.002, type=float)
-    # parser.add_argument('--dis_move', default=0.002, type=float)
-    # parser.add_argument('--grad_move', default=10, type=float)
-    parser.add_argument('--grad_move', default=100, type=float)
-    parser.add_argument('--penetration_threshold', default=0.0005, type=float)
-    # parser.add_argument('--penetration_threshold', default=0.0005, type=float)
+    # paper (original DexGraspNet) validation defaults
+    parser.add_argument('--thres_cont', default=0.001, type=float)
+    parser.add_argument('--dis_move', default=0.001, type=float)
+    parser.add_argument('--grad_move', default=500, type=float)
+    parser.add_argument('--penetration_threshold', default=0.001, type=float)
 
     args = parser.parse_args()
 
     translation_names = ['WRJTx', 'WRJTy', 'WRJTz']
     rot_names = ['WRJRx', 'WRJRy', 'WRJRz']
     joint_names = [
-        'robot0:FFJ3', 'robot0:FFJ2', 'robot0:FFJ1', 'robot0:FFJ0',
-        'robot0:MFJ3', 'robot0:MFJ2', 'robot0:MFJ1', 'robot0:MFJ0',
-        'robot0:RFJ3', 'robot0:RFJ2', 'robot0:RFJ1', 'robot0:RFJ0',
-        'robot0:LFJ4', 'robot0:LFJ3', 'robot0:LFJ2', 'robot0:LFJ1',
+        'thumb_joint_0', 'thumb_joint_1', 'thumb_joint_2', 'thumb_joint_3',
+        'index_joint_0', 'index_joint_1', 'index_joint_2', 'index_joint_3',
+        'middle_joint_0', 'middle_joint_1', 'middle_joint_2', 'middle_joint_3',
+        'ring_joint_0', 'ring_joint_1', 'ring_joint_2', 'ring_joint_3',
     ]
 
-    os.environ.pop("CUDA_VISIBLE_DEVICES")
+    os.environ.pop("CUDA_VISIBLE_DEVICES", None)
     os.makedirs(args.result_path, exist_ok=True)
 
     if not args.no_force:
@@ -79,7 +77,7 @@ if __name__ == '__main__':
         # print(scale_tensor.dtype)
         hand_model = HandModel(
             urdf_path="kistar/kistar.urdf",
-            mesh_path="/home/chanyoung/isaac_ws/DexGrasp_KIST/grasp_generation/kistar",
+            mesh_path="kistar",
             contact_points_path="kistar/contact_points.json",
             penetration_points_path="kistar/penetration_points.json",
             n_surface_points=2000,
@@ -168,24 +166,31 @@ if __name__ == '__main__':
         result = sim.run_sim()
         print(result)
     else:
+        # The penetration check uses the precomputed E_pen (free), while the
+        # IsaacGym sim is the expensive part. So filter by penetration FIRST and
+        # only simulate the survivors -> identical `valid`, much faster.
+        estimated = E_pen_array < args.penetration_threshold
+        sim_indices = np.where(estimated)[0]
+        print(f'estimated (E_pen<{args.penetration_threshold}): '
+              f'{estimated.sum()}/{batch_size} -> Isaac on these only', flush=True)
+
         simulated = np.zeros(batch_size, dtype=np.bool8)
-        offset = 0
         result = []
-        for batch in range(batch_size // args.val_batch):
-            offset_ = min(offset + args.val_batch, batch_size)
+        offset = 0
+        while offset < len(sim_indices):
+            batch_idx = sim_indices[offset: offset + args.val_batch]
             sim.set_asset("kistar", "kistar.urdf",
-                           os.path.join(args.mesh_path, args.object_code, "coacd"), "coacd.urdf")
-            for index in range(offset, offset_):
+                          os.path.join(args.mesh_path, args.object_code, "coacd"), "coacd.urdf")
+            for index in batch_idx:
                 sim.add_env(rotations[index], translations[index], hand_poses[index],
                             scale_array[index])
             result = [*result, *sim.run_sim()]
             sim.reset_simulator()
-            offset = offset_
-        for i in range(batch_size):
-            simulated[i] = np.array(sum(result[i * 6:(i + 1) * 6]) == 6)
+            offset += len(batch_idx)
+        for j, index in enumerate(sim_indices):
+            simulated[index] = np.array(sum(result[j * 6:(j + 1) * 6]) == 6)
 
-        estimated = E_pen_array < args.penetration_threshold
-        valid = simulated * estimated
+        valid = simulated * estimated  # == simulated, since we only sim estimated
         print(
             f'estimated: {estimated.sum().item()}/{batch_size}, '
             f'simulated: {simulated.sum().item()}/{batch_size}, '
@@ -193,12 +198,11 @@ if __name__ == '__main__':
         result_list = []
         for i in range(batch_size):
             if (valid[i]):
-                new_data_dict = {}
-                new_data_dict["qpos"] = data_dict[i]["qpos"]
-                new_data_dict["scale"] = data_dict[i]["scale"]
-                result_list.append(new_data_dict)
-        np.save(os.path.join(args.result_path, args.object_code +
-                '.npy'), result_list, allow_pickle=True)
+                result_list.append({"qpos": data_dict[i]["qpos"],
+                                    "scale": data_dict[i]["scale"]})
+        np.save(os.path.join(args.result_path, args.object_code + '.npy'),
+                result_list, allow_pickle=True)
+        print(f'saved {len(result_list)} valid grasps to {args.object_code}.npy')
     # sim.destroy()
 
     if args.index is not None:

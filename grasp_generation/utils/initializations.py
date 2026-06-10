@@ -44,7 +44,7 @@ def initialize_convex_hull(hand_model, object_model, args):
         faces = mesh_origin.faces
         vertices *= object_model.object_scale_tensor[i].max().item()
         mesh_origin = tm.Trimesh(vertices, faces)
-        mesh_origin.faces = mesh_origin.faces[mesh_origin.remove_degenerate_faces()]
+        mesh_origin.update_faces(mesh_origin.nondegenerate_faces())
         vertices += 0.2 * vertices / np.linalg.norm(vertices, axis=1, keepdims=True)
         mesh = tm.Trimesh(vertices=vertices, faces=faces).convex_hull
         vertices = torch.tensor(mesh.vertices, dtype=torch.float, device=device)
@@ -84,7 +84,15 @@ def initialize_convex_hull(hand_model, object_model, args):
     # joint_angles_mu: hand-crafted canonicalized hand articulation
     # use truncated normal distribution to jitter the joint angles
 
-    joint_angles_mu = torch.tensor([0.1, 0, 0.6, 0, 0, 0, 0.6, 0, -0.1, 0, 0.6, 0, 0, -0.2, 0, 0.6, 0, 0, 1.2, 0, -0.2, 0], dtype=torch.float, device=device)
+    # KISTAR canonical pose (16 DoF). Joint order follows URDF revolute order:
+    # thumb_0..3, index_0..3, middle_0..3, ring_0..3.
+    # Start with thumb_joint_0 = +90deg, thumb_joint_1 = -90deg, all others = 0deg.
+    joint_angles_mu = torch.tensor([
+        math.pi / 2, -math.pi / 2, 0.0, 0.0,   # thumb: opposition (j0,j1)
+        -math.pi / 12, 0.0, 0.0, 0.0,           # index: abduction -15deg (j0)
+        0.0, 0.0, 0.0, 0.0,                     # middle
+        math.pi / 12, 0.0, 0.0, 0.0,            # ring: abduction +15deg (j0)
+    ], dtype=torch.float, device=device)
     joint_angles_sigma = args.jitter_strength * (hand_model.joints_upper - hand_model.joints_lower)
     joint_angles = torch.zeros([total_batch_size, hand_model.n_dofs], dtype=torch.float, device=device)
     for i in range(hand_model.n_dofs):

@@ -37,10 +37,10 @@ class IsaacValidator():
         self.hand_rigid_body_sets = []
         self.obj_rigid_body_sets = []
         self.joint_names = joint_names = [
-        'robot0:FFJ3', 'robot0:FFJ2', 'robot0:FFJ1', 'robot0:FFJ0',
-        'robot0:MFJ3', 'robot0:MFJ2', 'robot0:MFJ1', 'robot0:MFJ0',
-        'robot0:RFJ3', 'robot0:RFJ2', 'robot0:RFJ1', 'robot0:RFJ0',
-        'robot0:LFJ4', 'robot0:LFJ3', 'robot0:LFJ2', 'robot0:LFJ1',
+        'thumb_joint_0', 'thumb_joint_1', 'thumb_joint_2', 'thumb_joint_3',
+        'index_joint_0', 'index_joint_1', 'index_joint_2', 'index_joint_3',
+        'middle_joint_0', 'middle_joint_1', 'middle_joint_2', 'middle_joint_3',
+        'ring_joint_0', 'ring_joint_1', 'ring_joint_2', 'ring_joint_3',
         ]
         self.hand_asset = None
         self.obj_asset = None
@@ -61,7 +61,10 @@ class IsaacValidator():
         self.sim_params.physx.rest_offset = 0.0
 
         self.sim_params.use_gpu_pipeline = False
-        self.sim = gym.create_sim(self.gpu, self.gpu, gymapi.SIM_PHYSX,
+        # headless (no viewer) -> graphics_device_id = -1, otherwise creating a
+        # graphics context on a display-less server segfaults
+        self.graphics_device = self.gpu if mode == "gui" else -1
+        self.sim = gym.create_sim(self.gpu, self.graphics_device, gymapi.SIM_PHYSX,
                                   self.sim_params)
         self.camera_props = gymapi.CameraProperties()
         self.camera_props.width = 800
@@ -295,7 +298,7 @@ class IsaacValidator():
         if self.has_viewer:
             gym.destroy_viewer(self.sim)
             self.viewer = gym.create_viewer(self.sim, self.camera_props)
-        self.sim = gym.create_sim(self.gpu, self.gpu, gymapi.SIM_PHYSX,
+        self.sim = gym.create_sim(self.gpu, self.graphics_device, gymapi.SIM_PHYSX,
                                   self.sim_params)
         for env in self.envs:
             gym.destroy_env(env)

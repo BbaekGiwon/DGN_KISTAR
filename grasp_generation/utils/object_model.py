@@ -42,8 +42,15 @@ class ObjectModel:
         self.object_scale_tensor = None
         self.object_mesh_list = None
         self.object_face_verts_list = None
-        self.scale_choice = torch.tensor([0.06, 0.08, 0.1, 0.12, 0.15], dtype=torch.float, device=self.device)
-        # self.scale_choice = torch.tensor([0.04, 0.06, 0.08, 0.1], dtype=torch.float, device=self.device)
+        # Scale augmentation: with normalized (unit-sphere) meshes, OBJ_SCALE gives
+        # the per-grasp bounding-sphere radius (m), randomly sampled from this list.
+        # Comma-separated for augmentation, e.g. OBJ_SCALE="0.03,0.045,0.06,0.075".
+        # Default 1.0 (= native-size meshes, no scaling).
+        import os as _os
+        _sc = _os.environ.get("OBJ_SCALE")
+        self.scale_choice = torch.tensor(
+            [float(x) for x in _sc.split(',')] if _sc else [1.0],
+            dtype=torch.float, device=self.device)
 
     def initialize(self, object_code_list):
         """
