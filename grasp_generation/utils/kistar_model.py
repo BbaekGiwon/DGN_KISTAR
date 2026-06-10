@@ -187,6 +187,17 @@ class HandModel:
         self.penetration_keypoints = torch.cat(self.penetration_keypoints, dim=0)
         self.global_index_to_link_index_penetration = torch.tensor(self.global_index_to_link_index_penetration, dtype=torch.long, device=device)
         self.n_keypoints = self.penetration_keypoints.shape[0]
+        # self-penetration pair mask: ignore keypoint pairs on the SAME FINGER.
+        # Within the joint limits a finger cannot collide with itself (and
+        # w_joints enforces the limits), so E_spen only needs to watch for
+        # collisions BETWEEN fingers (incl. thumb<->finger).
+        _link_names = list(self.mesh.keys())
+        _fingers = ['thumb', 'index', 'middle', 'ring']
+        _link_finger = torch.tensor(
+            [next((fi for fi, f in enumerate(_fingers) if ln.startswith(f)), -1)
+             for ln in _link_names], dtype=torch.long, device=device)
+        _fi = _link_finger[self.global_index_to_link_index_penetration]   # finger id per keypoint
+        self.spen_pair_mask = (_fi[:, None] == _fi[None, :])
 
         # parameters
         self.hand_pose = None
@@ -346,6 +357,8 @@ class HandModel:
         ) + self.global_translation.unsqueeze(1)
         dis = (points.unsqueeze(1) - points.unsqueeze(2) + 1e-13).square().sum(3).sqrt()
         dis = torch.where(dis < 1e-6, 1e6 * torch.ones_like(dis), dis)
+        # ignore same-link / adjacent-link pairs (always close, not real collisions)
+        dis = torch.where(self.spen_pair_mask.unsqueeze(0), 1e6 * torch.ones_like(dis), dis)
         dis = 0.02 - dis
         E_spen = torch.where(dis > 0, dis, torch.zeros_like(dis))
         return E_spen.sum((1, 2))
