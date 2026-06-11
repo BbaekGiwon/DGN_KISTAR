@@ -20,31 +20,20 @@ def box_grid(size, origin, spacing=0.018):
     Points sit at the box center in x; spread over y (width) and z (length).
     ceil so the 1cm spheres (2cm threshold) overlap to cover each axis -> the
     finger SIDES (y) get >=2 points, closing the inter-finger collision gap."""
-    import math
     sx, sy, sz = size
     ox, oy, oz = origin
     R = 0.01                              # keypoint radius = threshold(0.02)/2
     hx, hy, hz = sx / 2.0, sy / 2.0, sz / 2.0
 
-    # --- x-y cross-section pattern: circle passes through the cross-section
-    #     corners. The FULL radius budget goes to the cross-section, so the y
-    #     offset stays small (dy) and adjacent fingers don't trigger a baseline.
-    if hx < R:
-        dy = hy - math.sqrt(R * R - hx * hx)        # thin: 2 points on y-axis
-        xy = [(0.0, -dy), (0.0, dy)]
-    else:
-        ax = max(hx - R / math.sqrt(2), 0.0)        # square base: 2x2 corners
-        ay = max(hy - R / math.sqrt(2), 0.0)
-        xy = [(sxx * ax, syy * ay) for sxx in (-1, 1) for syy in (-1, 1)]
-
-    # --- z: simply 1cm (=R) inside each end -> 2 evenly-offset levels. Keeps the
-    #     y pair (width) but spreads the z points so a collision isn't counted by
-    #     many clustered points. Short links collapse to a single center level.
-    if sz >= 2 * R:
-        zs = [oz - hz + R, oz + hz - R]
-    else:
-        zs = [oz]
-    return [[float(ox + x), float(oy + y), float(z)] for z in zs for (x, y) in xy]
+    # Place each point 1cm (=R) inside the box face on every axis, so its sphere
+    # of radius R reaches EXACTLY the flat surface (no over-extension). Then two
+    # fingers' spheres overlap only when their surfaces actually penetrate
+    # (gap < 0) -- not merely when they touch. Axes shorter than the sphere
+    # (e.g. the thin x) just use the center.
+    xs = [ox - hx + R, ox + hx - R] if hx >= R else [ox]
+    ys = [oy - hy + R, oy + hy - R] if hy >= R else [oy]
+    zs = [oz - hz + R, oz + hz - R] if hz >= R else [oz]
+    return [[float(x), float(y), float(z)] for x in xs for y in ys for z in zs]
 
 
 def main():

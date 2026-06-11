@@ -86,12 +86,14 @@ def initialize_convex_hull(hand_model, object_model, args):
 
     # KISTAR canonical pose (16 DoF). Joint order follows URDF revolute order:
     # thumb_0..3, index_0..3, middle_0..3, ring_0..3.
-    # Start with thumb_joint_0 = +90deg, thumb_joint_1 = -90deg, all others = 0deg.
+    # The "spread" joints (thumb opposition, index/ring abduction) are set ~1 sigma
+    # INSIDE their limit (not AT it) so the trunc-normal init jitters both ways
+    # instead of one-sided. w_joints still lets optimization reach the limit if useful.
     joint_angles_mu = torch.tensor([
-        math.pi / 2, -math.pi / 2, 0.0, 0.0,   # thumb: opposition (j0,j1)
-        -math.pi / 12, 0.0, 0.0, 0.0,           # index: abduction -15deg (j0)
-        0.0, 0.0, 0.0, 0.0,                     # middle
-        math.pi / 12, 0.0, 0.0, 0.0,            # ring: abduction +15deg (j0)
+        math.radians(81), math.radians(-72), 0.0, 0.0,   # thumb: opposition (~1sigma inside 90/-90)
+        math.radians(-12), 0.0, 0.0, 0.0,                 # index: abduction (~1sigma inside -15)
+        0.0, 0.0, 0.0, 0.0,                               # middle
+        math.radians(12), 0.0, 0.0, 0.0,                  # ring: abduction (~1sigma inside +15)
     ], dtype=torch.float, device=device)
     joint_angles_sigma = args.jitter_strength * (hand_model.joints_upper - hand_model.joints_lower)
     joint_angles = torch.zeros([total_batch_size, hand_model.n_dofs], dtype=torch.float, device=device)

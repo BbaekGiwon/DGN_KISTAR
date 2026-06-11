@@ -38,6 +38,13 @@ if __name__ == '__main__':
     parser.add_argument('--dis_move', default=0.001, type=float)
     parser.add_argument('--grad_move', default=500, type=float)
     parser.add_argument('--penetration_threshold', default=0.001, type=float)
+    # extra prefilters using the values stored at generation time.
+    # default -1 = DISABLED -> exactly preserves old behavior (current v4 run).
+    # next validations: pass e.g. --spen_threshold 0.005 --joints_threshold 1e-4
+    parser.add_argument('--spen_threshold', default=-1.0, type=float,
+                        help='keep grasps with E_spen < this (self-penetration). <0 disables.')
+    parser.add_argument('--joints_threshold', default=-1.0, type=float,
+                        help='keep grasps with E_joints < this (joint-limit violation). <0 disables.')
 
     args = parser.parse_args()
 
@@ -139,6 +146,8 @@ if __name__ == '__main__':
     rotations = []
     translations = []
     E_pen_array = []
+    E_spen_array = []
+    E_joints_array = []
     for i in range(batch_size):
         qpos = data_dict[i]['qpos']
         scale = data_dict[i]['scale']
@@ -150,7 +159,11 @@ if __name__ == '__main__':
         hand_poses.append(np.array([qpos[name] for name in joint_names]))
         scale_array.append(scale)
         E_pen_array.append(data_dict[i]["E_pen"])
+        E_spen_array.append(data_dict[i].get("E_spen", 0.0))
+        E_joints_array.append(data_dict[i].get("E_joints", 0.0))
     E_pen_array = np.array(E_pen_array)
+    E_spen_array = np.array(E_spen_array)
+    E_joints_array = np.array(E_joints_array)
     if not args.no_force:
         hand_poses = hand_state[:, 9:]
 
@@ -170,8 +183,22 @@ if __name__ == '__main__':
         # IsaacGym sim is the expensive part. So filter by penetration FIRST and
         # only simulate the survivors -> identical `valid`, much faster.
         estimated = E_pen_array < args.penetration_threshold
+        # extra prefilters (disabled when threshold < 0): drop grasps that
+        # violate joint limits or self-penetrate BEFORE the expensive Isaac sim.
+        # joint limit first (hard constraint: Isaac clamps DOF), then self-pen.
+        if args.joints_threshold >= 0:
+            keep = E_joints_array < args.joints_threshold
+            print(f'  joints filter (E_joints<{args.joints_threshold}): '
+                  f'{(estimated & keep).sum()}/{estimated.sum()} survive', flush=True)
+            estimated = estimated & keep
+        if args.spen_threshold >= 0:
+            keep = E_spen_array < args.spen_threshold
+            print(f'  spen filter (E_spen<{args.spen_threshold}): '
+                  f'{(estimated & keep).sum()}/{estimated.sum()} survive', flush=True)
+            estimated = estimated & keep
         sim_indices = np.where(estimated)[0]
-        print(f'estimated (E_pen<{args.penetration_threshold}): '
+        extra = "" if (args.joints_threshold < 0 and args.spen_threshold < 0) else " & joints & spen"
+        print(f'estimated (E_pen<{args.penetration_threshold}{extra}): '
               f'{estimated.sum()}/{batch_size} -> Isaac on these only', flush=True)
 
         simulated = np.zeros(batch_size, dtype=np.bool8)
