@@ -1,0 +1,32 @@
+# DexGrasp_KIST — PyPI dependencies (generation + validation + visualization).
+# Python 3.8. Install AFTER creating the conda env. CUDA 11.7 torch wheels.
+# NOTE: isaacgym / pytorch3d / torchsdf / pytorch_kinematics are NOT on PyPI —
+#       install them manually (see README "Installation").
+
+--extra-index-url https://download.pytorch.org/whl/cu117
+torch==2.0.1+cu117
+torchvision==0.15.2+cu117
+
+# core
+numpy==1.23.0
+scipy==1.10.1
+networkx==3.1
+ninja==1.13.0
+pyyaml==6.0.3
+
+# mesh / transforms / plotting
+trimesh==4.12.2
+transforms3d==0.3.1
+plotly==6.7.0
+matplotlib==3.7.5
+opencv-python==4.13.0.92
+
+# visualization (viser)
+viser==1.0.29
+msgspec==0.18.6
+websockets==13.1
+zstandard==0.23.0
+imageio==2.35.1
+rich==14.3.4
+tqdm==4.67.3
+requests==2.28.1

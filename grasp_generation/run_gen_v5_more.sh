@@ -13,7 +13,7 @@ for seed in 790 791 792 793 794 795; do
     --data_root_path ../data/meshdata_norm --result_path ../data/graspdata_v5_s$seed \
     --batch_size_each 1440 --max_total_batch_size 7200 --n_iter 6000 \
     --temperature_decay 0.98 --switch_possibility 0.1 \
-    --w_pen 100 --w_spen 20 --w_joints 20 --overwrite \
+    --w_pen 100 --w_spen 20 --w_joints 20 \
     > ../data/gen_v5_s$seed.log 2>&1
   echo "===== seed $seed done ($(ls ../data/graspdata_v5_s$seed 2>/dev/null|wc -l)/78) ====="
 done

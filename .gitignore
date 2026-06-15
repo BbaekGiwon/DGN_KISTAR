@@ -77,3 +77,9 @@ data/vis_all/
 data/vis_v3/
 data/*.png
 **/*.bak_*
+
+# singularity
+/singularity/
+
+# session-specific run scripts (templates: sample_generation.sh / sample_validation.sh)
+grasp_generation/run_*.sh

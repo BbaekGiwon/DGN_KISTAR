@@ -1,0 +1,13 @@
+# Unified conda env for DexGrasp_KIST: generation + validation + visualization.
+#   conda env create -f environment.yml
+#   conda activate dgn_kistar
+#   # then install the 4 manual deps (isaacgym, pytorch3d, torchsdf,
+#   # pytorch_kinematics) — see README "Installation".
+name: dgn_kistar
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - pip
+  - pip:
+      - -r requirements.txt
