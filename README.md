@@ -1,4 +1,4 @@
-# DexGrasp_KIST (DGN_KISTAR)
+# DGN_KISTAR
 
 A dexterous-grasp **dataset-generation pipeline for the KISTAR 16-DoF hand**.
 - Original code: [DexGraspNet](https://arxiv.org/abs/2210.02697)
@@ -7,7 +7,7 @@ A dexterous-grasp **dataset-generation pipeline for the KISTAR 16-DoF hand**.
 
 ---
 ## KISTAR config
-(PDF to be attached)
+[KISTAR Configuration Document](./assets/DGN_KISTAR.pdf)
 
 The KISTAR hand has **16 DoF** — thumb / index / middle / ring, each with 4 joints
 (`*_joint_0` = abduction/opposition, `*_joint_1..3` = flexion).
@@ -130,7 +130,20 @@ python scripts/generate_grasps_kistar.py --all --seed 42 \
 ```
 - Energy: `E = E_fc + 100·E_dis + 100·E_pen + 20·E_spen + 20·E_joints`
 - Canonical init pose: thumb opposition (j0 = 81°, j1 = −72°), index/ring abduction ∓12° (set ~1σ inside the joint limits)
-- Omit `--overwrite` to **resume** (already-generated objects are skipped); change `--seed` to accumulate more grasps.
+- Omit `--overwrite` to **resume** (already-generated objects are skipped).
+
+**Grow the dataset by varying the seed.** Each seed is an independent pass over all 78 objects
+(different random init → distinct grasps). Run several seeds into separate dirs, then validate &
+merge them:
+```bash
+for SEED in 42 43 44 45; do
+  python scripts/generate_grasps_kistar.py --all --seed $SEED \
+    --data_root_path ../data/meshdata_norm --result_path ../data/graspdata_s$SEED \
+    --batch_size_each 1440 --max_total_batch_size 5760 --n_iter 6000 \
+    --temperature_decay 0.98 --switch_possibility 0.1 --w_pen 100 --w_spen 20 --w_joints 20
+done
+```
+> The released **`dataset_v5_merged`** (2,470 valid grasps) was built from **7 passes, seeds `789, 790, 791, 792, 793, 794, 795`**.
 
 ### Validation
 Easiest — edit the variables at the top of the sample script and run it:
