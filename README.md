@@ -63,9 +63,9 @@ cd thirdparty/pytorch_kinematics && pip install -e . && cd ../..
 git clone https://github.com/facebookresearch/pytorch3d.git thirdparty/pytorch3d
 cd thirdparty/pytorch3d && pip install -e . && cd ../..
 
-# TorchSDF
+# TorchSDF (pin the exact commit used here for reproducibility)
 git clone https://github.com/wrc042/TorchSDF.git thirdparty/TorchSDF
-cd thirdparty/TorchSDF && git checkout 0.1.0 && bash install.sh && cd ../..
+cd thirdparty/TorchSDF && git checkout 3f3f83d && bash install.sh && cd ../..
 ```
 
 **Optional — asset processing only** (preparing *new* object meshes; skip if you use the provided `meshdata_norm`):
@@ -143,7 +143,7 @@ for SEED in 42 43 44 45; do
     --temperature_decay 0.98 --switch_possibility 0.1 --w_pen 100 --w_spen 20 --w_joints 20
 done
 ```
-> The released **`dataset_v5_merged`** (2,470 valid grasps) was built from **7 passes, seeds `789, 790, 791, 792, 793, 794, 795`**.
+> The released **`dataset_v5_merged`** (**5,638 valid grasps**, 78/78 objects, avg 72 per object) was built from **17 passes, seeds `789`–`805`**.
 
 ### Validation
 Easiest — edit the variables at the top of the sample script and run it:
